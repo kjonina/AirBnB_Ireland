@@ -201,37 +201,70 @@ plt.show()
 
 ''' I am sure there is a lot more smooth method to create county'''
 
+
+# checking AirBnBs per Parishes
+county_price_AV = pd.DataFrame({'county': df['county'],
+                   'availability_365': df['availability_365'],
+                   'price': df['price']})
+
+county_price = county_price_AV.groupby(
+        ['county']
+        )['price']
+
+# Checking for outliers
+print(county_price.describe())
+
+#order by the mean
+county_price.mean().sort_values(ascending=False)
+
+
+
+# =============================================================================
+# Parishes
+# =============================================================================
 #Creating Parishes 
 df['Parish'] = (np.where(df['neighbourhood'].str.contains(' LEA'),
                   df['neighbourhood'].str.split(' LEA').str[0],
                   df['neighbourhood']))
 
 # checking AirBnBs per Parishes
-parish = pd.DataFrame({'A': df['Parish'],
-                   'B': df['county'],
-                   'C': df['availability_365'],
-                   'D': df['price']})
+parish_price_AV = pd.DataFrame({'parish': df['Parish'],
+                   'county': df['county'],
+                   'availability_365': df['availability_365'],
+                   'price': df['price']})
+
+#Examining top 5 location of listings for AirBnb
+parish_price_AV.groupby(['A', 'B']).size().sort_values(ascending=False)
+#North Inner City       Dublin      1531
+#South East Inner City  Dublin      1350
+#Kenmare                Kerry       1102
+#South West Inner City  Dublin       828
+#Ennistimon             Clare        818
 
 
-parish.groupby(['A', 'B']).size().head(15).sort_values(ascending=False)
-#Artane-Whitehall           Dublin       197
-#Athenry-Oranmore           Galway       151
-#Ballina                    Mayo         133
-#Arklow                     Wicklow      115
-#Adare-Rathkeale            Limerick     106
-#Athlone                    Westmeath     79
-#Ashbourne                  Meath         74
-#Athy                       Kildare       73
-#Ballinamore-LEA-6          Leitrim       66
-#Balbriggan                 Dublin        61
-#Bailieborough - Cootehill  Cavan         48
-#Ardee                      Louth         47
-#Ballybay-Clones            Monaghan      46
-#Athlone                    Roscommon     42
-#Ballinasloe                Galway        38
-#dtype: int64
 
+parish_price = parish_price_AV.groupby(
+        ['parish', 'county']
+        )['price']
 
+print(parish_price.describe())
+
+parish_price.mean().sort_values(ascending=False)
+#Kimmage-Rathmines          Dublin       2990.784314
+#Conamara North             Galway        420.126482
+#Cappamore-Kilmallock       Limerick      382.763889
+#Laytown  Bettystown-lea-7  Meath         290.789916
+#Dundalk South              Louth         242.596154
+#Rosslare                   Wexford       219.176190
+#Granard                    Longford      213.894737
+#Lismore                    Waterford     200.163934
+#South West Inner City      Dublin        195.751208
+#Dundalk-Carlingford        Louth         189.312500
+#Kenmare                    Kerry         187.952813
+#Conamara South             Galway        172.287197
+#Ongar                      Dublin        170.854545
+#Callan-Thomastown          Kilkenny      165.994253
+#Naas                       Kildare       164.661290
 
 plt.figure(figsize = (12, 8))
 sns.countplot(x = 'Parish', data = df, palette = 'terrain',order = df['Parish'].value_counts().head(50).index)
@@ -242,21 +275,6 @@ plt.xlabel('Parish', fontsize = 14)
 plt.show()
 
 
-
-'''
-IDEAS FOR EDA
-
-- boxplot for Councils
-- map of the place by Longitude
-
-- split data by lstrip to get Dublin, Cavan, Carlow,
-- get a gradient map
-
-- split data by LEA -
-- get a gradient map again (especially of dublin!)
-
-
-'''
 # =============================================================================
 # Checking Room Type
 # =============================================================================
@@ -361,13 +379,73 @@ plt.ylabel('Availability', fontsize = 14)
 plt.xlabel('Price', fontsize = 14)
 
 # =============================================================================
-# Perhaps lack of correlation due to Dublin and the other counties'''
+# Perhaps lack of correlation due to Dublin and the other counties
 # =============================================================================
 # Getting Dublin
 df_dublin = df[df.county == 'Dublin']
 
+df_dublin.Parish.unique()
+#array(['Ballyfermot-Drimnagh', 'South East Inner City',
+#       'North Inner City', 'South West Inner City', 'Cabra-Glasnevin',
+#       'Pembroke', 'Kimmage-Rathmines', 'Clontarf', 'Artane-Whitehall',
+#       'Donaghmede', 'Ballymun-Finglas', 'Tallaght Central',
+#       'Palmerstown-Fonthill', 'Clondalkin', 'Lucan',
+#       'Rathfarnham-Templeogue', 'Tallaght South',
+#       'Firhouse-Bohernabreena', 'Howth-Malahide',
+#       'Blanchardstown-Mulhuddart', 'Balbriggan', 'Swords', 'Ongar',
+#       'Castleknock', 'Dundrum', 'Stillorgan', 'Killiney-Shankill',
+#       'Glencullen-Sandyford', 'Blackrock', 'Dún Laoghaire', 'Rush-Lusk'],
+#      dtype=object)
+
+
+# counting numbers of Room Types
+df_dublin.groupby(['Parish']).size().sort_values(ascending=False)
+#North Inner City             1531
+#South East Inner City        1350
+#South West Inner City         828
+#Pembroke                      648
+#Cabra-Glasnevin               515
+#Kimmage-Rathmines             408
+#Clontarf                      306
+#Howth-Malahide                226
+#Dún Laoghaire                 211
+#Artane-Whitehall              197
+#Swords                        156
+#Glencullen-Sandyford          142
+#Ballyfermot-Drimnagh          133
+#Blackrock                     130
+#Dundrum                       124
+#Stillorgan                    120
+#Castleknock                   115
+#Donaghmede                    104
+#Killiney-Shankill             102
+#Rathfarnham-Templeogue         89
+#Ballymun-Finglas               82
+#Blanchardstown-Mulhuddart      79
+#Rush-Lusk                      70
+#Clondalkin                     62
+#Balbriggan                     61
+#Ongar                          55
+#Firhouse-Bohernabreena         50
+#Lucan                          34
+#Palmerstown-Fonthill           33
+#Tallaght South                 33
+#Tallaght Central               24
+
+
 #Checking Dublin's Statistics
 df_dublin.describe()
+
+
+
+
+plt.figure(figsize = (12, 8))
+sns.countplot(x = 'parish', data = df_dublin, palette = 'terrain',order = df_dublin['Parish'].value_counts().head(50).index)
+plt.xticks(rotation = 90)
+plt.title('Number of AirBnBs in each Parish in Dublin', fontsize = 16)
+plt.ylabel('count', fontsize = 14)
+plt.xlabel('Parish', fontsize = 14)
+plt.show()
 
 #plotting the data
 plt.figure(figsize = (12, 8))
@@ -380,14 +458,11 @@ plt.xlabel('Price', fontsize = 14)
 sns.catplot(x="price", y="C", data = df)
 
 
-
-
-
 '''
 SCATTERPLOT FOR PRICE AND AVAILABILITY
 '''
 
-sns.relplot(x = "price", y = "availability_365", data = df, hue="county");
+sns.relplot(x = "price", y = "availability_365", data = df_dublin);
 
 # =============================================================================
 # Examining Top Hosts in ROI
@@ -442,7 +517,6 @@ top_host_table_AV = pd.DataFrame({'A': df['host_id'],
 top_host_table_AV.A.value_counts().head(10)
 
 
-
 # =============================================================================
 # Creating the map of Ireland
 # =============================================================================
@@ -452,3 +526,16 @@ top_host_table_AV.A.value_counts().head(10)
 map_of_ROI=df.plot(kind='scatter', x='longitude', y='latitude', label='availability_365', c='price',
                   cmap=plt.get_cmap('jet'), colorbar=True, alpha=0.4, figsize=(10,8))
 map_of_ROI.legend()
+
+
+'''
+IDEAS FOR EDA
+
+- boxplot for Councils
+
+- get a gradient map by county
+
+- get a gradient map again (especially of dublin!)
+
+
+'''
