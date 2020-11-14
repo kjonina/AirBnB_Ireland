@@ -90,41 +90,41 @@ df.drop('last_review',axis=1,inplace=True)
 
 df.groupby(['neighbourhood_group']).size().sort_values(ascending=False)
 #Dublin City Council                      6102
-#Kerry County Council                     2927
-#Donegal County Council                   2044
-#Cork County Council                      1881
-#Galway County Council                    1656
-#Clare County Council                     1532
-#Mayo County Council                      1279
+#Kerry county Council                     2927
+#Donegal county Council                   2044
+#Cork county Council                      1881
+#Galway county Council                    1656
+#Clare county Council                     1532
+#Mayo county Council                      1279
 #Galway City Council                      1027
-#Dun Laoghaire-rathdown County Council     829
-#Fingal County Council                     762
-#Wexford County Council                    721
-#Wicklow County Council                    551
-#Sligo County Council                      508
-#Waterford City And County Council         505
+#Dun Laoghaire-rathdown county Council     829
+#Fingal county Council                     762
+#Wexford county Council                    721
+#Wicklow county Council                    551
+#Sligo county Council                      508
+#Waterford City And county Council         505
 #Cork City Council                         487
-#Tipperary County Council                  456
-#Kilkenny County Council                   435
-#Meath County Council                      422
-#Limerick City And County Council          421
-#Louth County Council                      347
-#Kildare County Council                    339
-#South Dublin County Council               325
-#Leitrim County Council                    270
-#Westmeath County Council                  228
-#Roscommon County Council                  204
-#Cavan County Council                      193
-#Carlow County Council                     175
-#Laois County Council                      171
-#Offaly County Council                     150
-#Monaghan County Council                   128
-#Longford County Council                    56
+#Tipperary county Council                  456
+#Kilkenny county Council                   435
+#Meath county Council                      422
+#Limerick City And county Council          421
+#Louth county Council                      347
+#Kildare county Council                    339
+#South Dublin county Council               325
+#Leitrim county Council                    270
+#Westmeath county Council                  228
+#Roscommon county Council                  204
+#Cavan county Council                      193
+#Carlow county Council                     175
+#Laois county Council                      171
+#Offaly county Council                     150
+#Monaghan county Council                   128
+#Longford county Council                    56
 
 plt.figure(figsize = (12, 8))
 sns.countplot(x = 'neighbourhood_group', data = df, palette = 'terrain',order = df['neighbourhood_group'].value_counts().index)
 plt.xticks(rotation = 90)
-plt.title('Number of AirBnBs in each County Councils', fontsize = 16)
+plt.title('Number of AirBnBs in each county Councils', fontsize = 16)
 plt.ylabel('count', fontsize = 14)
 plt.xlabel('Councils', fontsize = 14)
 plt.show()
@@ -143,39 +143,96 @@ plt.xlabel('Councils', fontsize = 14)
 plt.show()
 
 # =============================================================================
-# Splitting "neighbourhood_group" to just Dublin, Donegal and Cavan etc.
+# Splitting "neighbourhood_group" to just Co. Dublin, Donegal and Cavan etc.
 # =============================================================================
+df.neighbourhood_group.unique()
+#array(['Dublin City Council', 'Cork City Council', 'Galway City Council',
+#       'Offaly County Council', 'Wicklow County Council',
+#       'Tipperary County Council', 'Monaghan County Council',
+#       'Sligo County Council', 'Wexford County Council',
+#       'South Dublin County Council', 'Fingal County Council',
+#       'Clare County Council', 'Donegal County Council',
+#       'Meath County Council', 'Westmeath County Council',
+#       'Mayo County Council', 'Limerick City And County Council',
+#       'Kildare County Council', 'Kerry County Council',
+#       'Louth County Council', 'Longford County Council',
+#       'Dun Laoghaire-rathdown County Council', 'Galway County Council',
+#       'Carlow County Council', 'Cork County Council',
+#       'Leitrim County Council', 'Kilkenny County Council',
+#       'Laois County Council', 'Roscommon County Council',
+#       'Cavan County Council', 'Waterford City And County Council'],
 
-df['County1'] = (np.where(df['neighbourhood_group'].str.contains(' County'),
+
+df['county1'] = (np.where(df['neighbourhood_group'].str.contains(' County'),
                   df['neighbourhood_group'].str.split(' County').str[0],
                   df['neighbourhood_group']))
 
 
-df['County'] = (np.where(df['County1'].str.contains(' City'),
-                  df['County1'].str.split(' City').str[0],
-                  df['County1']))
+df['county2'] = (np.where(df['county1'].str.contains(' City'),
+                  df['county1'].str.split(' City').str[0],
+                  df['county1']))
+
+#Removing 'South' in Dublin
+df['county'] = (np.where(df['county2'].str.contains('South '),
+                  df['county2'].str.split('South ').str[1],
+                  df['county2']))
+
+#Must change Dun Laoighre and Fingal to Dublin for it to be County
+df.neighbourhood_group.unique()
+df['county'] = df['county'].str.replace('Dun Laoghaire-rathdown','Dublin')
+df['county'] = df['county'].str.replace('Fingal','Dublin')
+
+# dropping county1
+df.drop('county1',axis=1,inplace=True)
+
+# dropping county2
+df.drop('county2',axis=1,inplace=True)
 
 
+
+#creating a graph of counties
+plt.figure(figsize = (12, 8))
+sns.countplot(x = 'county', data = df, palette = 'terrain',order = df['county'].value_counts().index)
+plt.xticks(rotation = 90)
+plt.title('Number of AirBnBs in each county', fontsize = 16)
+plt.ylabel('count', fontsize = 14)
+plt.xlabel('county', fontsize = 14)
+plt.show()
+
+''' I am sure there is a lot more smooth method to create county'''
+
+#Creating Parishes 
 df['Parish'] = (np.where(df['neighbourhood'].str.contains(' LEA'),
                   df['neighbourhood'].str.split(' LEA').str[0],
                   df['neighbourhood']))
 
+# checking AirBnBs per Parishes
+parish = pd.DataFrame({'A': df['Parish'],
+                   'B': df['county'],
+                   'C': df['availability_365'],
+                   'D': df['price']})
+
+
+parish.groupby(['A', 'B']).size().head(15).sort_values(ascending=False)
+#Artane-Whitehall           Dublin       197
+#Athenry-Oranmore           Galway       151
+#Ballina                    Mayo         133
+#Arklow                     Wicklow      115
+#Adare-Rathkeale            Limerick     106
+#Athlone                    Westmeath     79
+#Ashbourne                  Meath         74
+#Athy                       Kildare       73
+#Ballinamore-LEA-6          Leitrim       66
+#Balbriggan                 Dublin        61
+#Bailieborough - Cootehill  Cavan         48
+#Ardee                      Louth         47
+#Ballybay-Clones            Monaghan      46
+#Athlone                    Roscommon     42
+#Ballinasloe                Galway        38
+#dtype: int64
 
 
 
-plt.figure(figsize = (12, 8))
-sns.countplot(x = 'County', data = df, palette = 'terrain',order = df['County'].value_counts().index)
-plt.xticks(rotation = 90)
-plt.title('Number of AirBnBs in each County', fontsize = 16)
-plt.ylabel('count', fontsize = 14)
-plt.xlabel('County', fontsize = 14)
-plt.show()
-
-
-
-df.groupby(['Parish']).size().sort_values(ascending=False)
-
-df.groupby(['Parish']).size().sort_values(ascending=False)
 plt.figure(figsize = (12, 8))
 sns.countplot(x = 'Parish', data = df, palette = 'terrain',order = df['Parish'].value_counts().head(50).index)
 plt.xticks(rotation = 90)
@@ -251,44 +308,43 @@ CREATE A BAR CHART
 
 
 # =============================================================================
-# Checking County by Availability 365 and Price
+# Checking county by Availability 365 and Price
 # =============================================================================
 
 county_availablity_price = df.groupby(
-        ['County']
+        ['county']
         )['availability_365', 'price'].mean()
 
-#                        availability_365       price
-#County                                              
-#Carlow                        155.222857  110.097143
-#Cavan                         213.844560   93.373057
-#Clare                         174.340078  126.587467
-#Cork                          163.842061  111.277872
-#Donegal                       201.514677  105.308219
-#Dublin                         63.825139  323.215175
-#Dun Laoghaire-rathdown         70.465621  118.004825
-#Fingal                         98.812336  104.179790
-#Galway                        162.500559  204.108461
-#Kerry                         191.302016  144.601982
-#Kildare                       141.466077  107.115044
-#Kilkenny                      150.326437  133.818391
-#Laois                         191.584795   85.637427
-#Leitrim                       189.659259  115.388889
-#Limerick                      174.066508  139.173397
-#Longford                      159.464286  140.303571
-#Louth                         198.273775  168.700288
-#Mayo                          190.433151  107.325254
-#Meath                         158.845972  160.869668
-#Monaghan                      190.710938   90.984375
-#Offaly                        177.660000  102.186667
-#Roscommon                     192.745098  102.916667
-#Sligo                         161.984252  101.708661
-#South Dublin                   91.929231   80.667692
-#Tipperary                     191.081140  125.421053
-#Waterford                     149.324752  118.902970
-#Westmeath                     195.881579  110.855263
-#Wexford                       144.213592  140.382802
-#Wicklow                       167.646098  108.903811
+
+print(county_availablity_price)
+#           availability_365       price
+#county                                 
+#Carlow           155.222857  110.097143
+#Cavan            213.844560   93.373057
+#Clare            174.340078  126.587467
+#Cork             163.842061  111.277872
+#Donegal          201.514677  105.308219
+#Dublin            68.975929  271.350337
+#Galway           162.500559  204.108461
+#Kerry            191.302016  144.601982
+#Kildare          141.466077  107.115044
+#Kilkenny         150.326437  133.818391
+#Laois            191.584795   85.637427
+#Leitrim          189.659259  115.388889
+#Limerick         174.066508  139.173397
+#Longford         159.464286  140.303571
+#Louth            198.273775  168.700288
+#Mayo             190.433151  107.325254
+#Meath            158.845972  160.869668
+#Monaghan         190.710938   90.984375
+#Offaly           177.660000  102.186667
+#Roscommon        192.745098  102.916667
+#Sligo            161.984252  101.708661
+#Tipperary        191.081140  125.421053
+#Waterford        149.324752  118.902970
+#Westmeath        195.881579  110.855263
+#Wexford          144.213592  140.382802
+#Wicklow          167.646098  108.9038111
 
 #plotting the data
 plt.figure(figsize = (20, 16))
@@ -299,14 +355,31 @@ plt.xlabel('Price', fontsize = 14)
 
 #plotting the data
 plt.figure(figsize = (12, 8))
-sns.relplot(x = "price", y = "availability_365", data = room_type_availablity);
+sns.relplot(x = "price", y = "availability_365", data = county_availablity_price);
+plt.title('Checking correlation between Availability and Price', fontsize = 16)
+plt.ylabel('Availability', fontsize = 14)
+plt.xlabel('Price', fontsize = 14)
+
+# =============================================================================
+# Perhaps lack of correlation due to Dublin and the other counties'''
+# =============================================================================
+# Getting Dublin
+df_dublin = df[df.county == 'Dublin']
+
+#Checking Dublin's Statistics
+df_dublin.describe()
+
+#plotting the data
+plt.figure(figsize = (12, 8))
+sns.relplot(x = "price", y = "availability_365", data = df_dublin);
 plt.title('Checking correlation between Availability and Price', fontsize = 16)
 plt.ylabel('Availability', fontsize = 14)
 plt.xlabel('Price', fontsize = 14)
 
 
+sns.catplot(x="price", y="C", data = df)
 
-sns.catplot(x="price", y="room_type", data = df)
+
 
 
 
@@ -314,10 +387,10 @@ sns.catplot(x="price", y="room_type", data = df)
 SCATTERPLOT FOR PRICE AND AVAILABILITY
 '''
 
-sns.relplot(x = "price", y = "availability_365", data = df, hue="County");
+sns.relplot(x = "price", y = "availability_365", data = df, hue="county");
 
 # =============================================================================
-# 
+# Examining Top Hosts in ROI
 # =============================================================================
 #let's see what hosts (IDs) have the most listings on Airbnb platform and taking advantage of this service
 top_host = df.host_id.value_counts().head(10)
@@ -334,6 +407,26 @@ top_host = df.host_id.value_counts().head(10)
 #123745971     41
 #134884575     38
 
+
+#Creating a dataframe for top_host
+top_host_df=pd.DataFrame(top_host)
+top_host_df.reset_index(inplace=True)
+top_host_df.rename(columns={'index':'Host_ID', 'host_id':'P_Count'}, inplace=True)
+top_host_df
+
+
+#Creating a graph for Hosts
+host_graph=sns.barplot(x="Host_ID", y="P_Count", data=top_host_df,
+                 palette='Blues_d')
+host_graph.set_title('Hosts with the most listings in ROI')
+host_graph.set_ylabel('Count of listings')
+host_graph.set_xlabel('Host IDs')
+host_graph.set_xticklabels(host_graph.get_xticklabels(), rotation=45)
+
+
+
+
+'''TRYING TO CREATE A MEAN FOR AVAILABILITY FOR TOP 15 HOSTS'''
 top_host1 = df.groupby(
         ['host_id']
         )['availability_365', 'price'].mean()
@@ -343,12 +436,12 @@ top_host1 = df.groupby(
 
 #pivoting table to produce:
 top_host_table_AV = pd.DataFrame({'A': df['host_id'],
-                   'B': df['County'],
+                   'B': df['county'],
                    'C': df['availability_365']})
 
 top_host_table_AV.A.value_counts().head(10)
 
-'''TRYING TO CREATE A MEAN FOR AVAILABILITY FOR TOP 15 HOSTS'''
+
 
 # =============================================================================
 # Creating the map of Ireland
