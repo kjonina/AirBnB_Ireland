@@ -58,7 +58,7 @@ New Variables were created such as County.  County is an important variable beca
 
 ### What County and City Coucils have the most AirBnB listing?
 
-![council](https://github.com/kjonina/AirBnB_Ireland/blob/master/Graphs/council.png)
+![council](https://github.com/kjonina/AirBnB_Ireland/blob/main/Graphs/council.png)
 
 ### What is the average price for listings in each City and County Council?
 
@@ -66,7 +66,7 @@ New Variables were created such as County.  County is an important variable beca
 
 ### What parishes have the most AirBnB listing?
 
-![parish](https://github.com/kjonina/AirBnB_Ireland/blob/master/Graphs/parish.png)
+![parish](https://github.com/kjonina/AirBnB_Ireland/blob/main/Graphs/parish.png)
 
 ### What is the average price for listings in each parishes?
 
@@ -74,7 +74,7 @@ New Variables were created such as County.  County is an important variable beca
 
 ### What counties have the most AirBnB listing?
 
-![county](https://github.com/kjonina/AirBnB_Ireland/blob/master/Graphs/county.png)
+![county](https://github.com/kjonina/AirBnB_Ireland/blob/main/Graphs/county.png)
 
 ### What is the average price for listings in each county?
 
@@ -82,7 +82,7 @@ New Variables were created such as County.  County is an important variable beca
 
 ### What is the most common room type listed in Ireland?**
 
-![room_type](https://github.com/kjonina/AirBnB_Ireland/blob/master/Graphs/room_type.png)
+![room_type](https://github.com/kjonina/AirBnB_Ireland/blob/main/Graphs/room_type.png)
 
 There are a huge difference in the room type listing:
 
