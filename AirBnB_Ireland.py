@@ -51,27 +51,15 @@ print(df.info())
 
 # checking for missing data
 df.isnull().sum() 
-#id                                   0
-#name                                 2
-#host_id                              0
-#host_name                            4
-#neighbourhood_group                  0
-#neighbourhood                        0
-#latitude                             0
-#longitude                            0
-#room_type                            0
-#price                                0
-#minimum_nights                       0
-#number_of_reviews                    0
-#number_of_reviews_ltm                0
-#last_review                       3802
-#calculated_host_listings_count       0
-#availability_365                     0
+
 
 # getting the statistics such as the mean, standard deviation, min and max for numerical variables
 print(df.describe()) 
 
 
+# =============================================================================
+# Changing variables dtypes
+# =============================================================================
 df['neighbourhood'] = df['neighbourhood'].astype('category')
 df['neighbourhood_group'] = df['neighbourhood_group'].astype('category')
 df['room_type'] = df['room_type'].astype('category')
@@ -85,83 +73,9 @@ df['room_type'] = df['room_type'].astype('category')
 df.drop('last_review',axis=1,inplace=True)
 
 # =============================================================================
-# Examining EDA
-# =============================================================================
-
-df.groupby(['neighbourhood_group']).size().sort_values(ascending=False)
-#Dublin City Council                      6102
-#Kerry county Council                     2927
-#Donegal county Council                   2044
-#Cork county Council                      1881
-#Galway county Council                    1656
-#Clare county Council                     1532
-#Mayo county Council                      1279
-#Galway City Council                      1027
-#Dun Laoghaire-rathdown county Council     829
-#Fingal county Council                     762
-#Wexford county Council                    721
-#Wicklow county Council                    551
-#Sligo county Council                      508
-#Waterford City And county Council         505
-#Cork City Council                         487
-#Tipperary county Council                  456
-#Kilkenny county Council                   435
-#Meath county Council                      422
-#Limerick City And county Council          421
-#Louth county Council                      347
-#Kildare county Council                    339
-#South Dublin county Council               325
-#Leitrim county Council                    270
-#Westmeath county Council                  228
-#Roscommon county Council                  204
-#Cavan county Council                      193
-#Carlow county Council                     175
-#Laois county Council                      171
-#Offaly county Council                     150
-#Monaghan county Council                   128
-#Longford county Council                    56
-
-plt.figure(figsize = (12, 8))
-sns.countplot(x = 'neighbourhood_group', data = df, palette = 'terrain',order = df['neighbourhood_group'].value_counts().index)
-plt.xticks(rotation = 90)
-plt.title('Number of AirBnBs in each county Councils', fontsize = 16)
-plt.ylabel('count', fontsize = 14)
-plt.xlabel('Councils', fontsize = 14)
-plt.show()
-
-
-
-df.groupby(['neighbourhood']).size().sort_values(ascending=False)
-
-df.groupby(['neighbourhood']).size().sort_values(ascending=False)
-plt.figure(figsize = (12, 8))
-sns.countplot(x = 'neighbourhood', data = df, palette = 'terrain',order = df['neighbourhood'].value_counts().head(50).index)
-plt.xticks(rotation = 90)
-plt.title('Number of AirBnBs in each Neighbourhood', fontsize = 16)
-plt.ylabel('count', fontsize = 14)
-plt.xlabel('Councils', fontsize = 14)
-plt.show()
-
-# =============================================================================
 # Splitting "neighbourhood_group" to just Co. Dublin, Donegal and Cavan etc.
 # =============================================================================
 df.neighbourhood_group.unique()
-#array(['Dublin City Council', 'Cork City Council', 'Galway City Council',
-#       'Offaly County Council', 'Wicklow County Council',
-#       'Tipperary County Council', 'Monaghan County Council',
-#       'Sligo County Council', 'Wexford County Council',
-#       'South Dublin County Council', 'Fingal County Council',
-#       'Clare County Council', 'Donegal County Council',
-#       'Meath County Council', 'Westmeath County Council',
-#       'Mayo County Council', 'Limerick City And County Council',
-#       'Kildare County Council', 'Kerry County Council',
-#       'Louth County Council', 'Longford County Council',
-#       'Dun Laoghaire-rathdown County Council', 'Galway County Council',
-#       'Carlow County Council', 'Cork County Council',
-#       'Leitrim County Council', 'Kilkenny County Council',
-#       'Laois County Council', 'Roscommon County Council',
-#       'Cavan County Council', 'Waterford City And County Council'],
-
 
 df['county1'] = (np.where(df['neighbourhood_group'].str.contains(' County'),
                   df['neighbourhood_group'].str.split(' County').str[0],
@@ -188,18 +102,61 @@ df.drop('county1',axis=1,inplace=True)
 # dropping county2
 df.drop('county2',axis=1,inplace=True)
 
+''' I am sure there is a lot more smooth method to create county'''
 
+# =============================================================================
+# Removing 'LEA' from Parishes
+# =============================================================================
+#Creating Parishes 
+df['parish'] = (np.where(df['neighbourhood'].str.contains(' LEA'),
+                  df['neighbourhood'].str.split(' LEA').str[0],
+                  df['neighbourhood']))
+
+# =============================================================================
+# Examining EDA
+# =============================================================================
+#examining the data in Councils
+print(df.groupby(['neighbourhood_group']).size().sort_values(ascending=False))
+
+sns.set()
+
+# create a graph
+plt.figure(figsize = (12, 8))
+sns.countplot(y = 'neighbourhood_group', data = df, palette = 'terrain',order = df['neighbourhood_group'].value_counts().index)
+plt.title('Number of AirBnBs listings under each Councils\' Supervision', fontsize = 20)
+plt.ylabel('Councils', fontsize = 14)
+plt.xlabel('count', fontsize = 14)
+plt.show()
+
+
+
+
+# examining data in Parishes
+print(df.groupby(['parish']).size().sort_values(ascending=False))
+
+# create a graph
+plt.figure(figsize = (12, 8))
+sns.countplot(y = 'parish', data = df, palette = 'terrain',order = df['parish'].value_counts().head(20).index)
+plt.xticks(rotation = 90)
+plt.title('Number of AirBnBs Listings in Top 20 Parish', fontsize = 20)
+plt.ylabel('List of Parishes', fontsize = 14)
+plt.xlabel('count', fontsize = 14)
+plt.show()
+plt.show()
+
+# =============================================================================
+# Analysing countries
+# =============================================================================
 
 #creating a graph of counties
 plt.figure(figsize = (12, 8))
-sns.countplot(x = 'county', data = df, palette = 'terrain',order = df['county'].value_counts().index)
-plt.xticks(rotation = 90)
-plt.title('Number of AirBnBs in each county', fontsize = 16)
-plt.ylabel('count', fontsize = 14)
-plt.xlabel('county', fontsize = 14)
+sns.countplot(y = 'county', data = df, palette = 'terrain',order = df['county'].value_counts().index)
+plt.title('Number of AirBnBs in Each County', fontsize = 20)
+plt.ylabel('List of Country', fontsize = 14)
+plt.xlabel('coun', fontsize = 14)
 plt.show()
 
-''' I am sure there is a lot more smooth method to create county'''
+
 
 
 # checking AirBnBs per Parishes
@@ -222,10 +179,6 @@ county_price.mean().sort_values(ascending=False)
 # =============================================================================
 # Parishes
 # =============================================================================
-#Creating Parishes 
-df['Parish'] = (np.where(df['neighbourhood'].str.contains(' LEA'),
-                  df['neighbourhood'].str.split(' LEA').str[0],
-                  df['neighbourhood']))
 
 # checking AirBnBs per Parishes
 parish_price_AV = pd.DataFrame({'parish': df['Parish'],
@@ -269,7 +222,7 @@ parish_price.mean().sort_values(ascending=False)
 plt.figure(figsize = (12, 8))
 sns.countplot(x = 'Parish', data = df, palette = 'terrain',order = df['Parish'].value_counts().head(50).index)
 plt.xticks(rotation = 90)
-plt.title('Number of AirBnBs in each Top 50 Parish', fontsize = 16)
+plt.title('Number of AirBnBs in each Top 50 Parish', fontsize = 20)
 plt.ylabel('count', fontsize = 14)
 plt.xlabel('Parish', fontsize = 14)
 plt.show()
@@ -295,7 +248,7 @@ df.groupby(['room_type']).size().sort_values(ascending=False)
 plt.figure(figsize = (12, 8))
 sns.countplot(x = 'room_type', data = df, palette = 'terrain',order = df['room_type'].value_counts().index)
 plt.xticks(rotation = 90)
-plt.title('Number of Room Types', fontsize = 16)
+plt.title('Number of Room Types', fontsize = 20)
 plt.ylabel('count', fontsize = 14)
 plt.xlabel('Room Types', fontsize = 14)
 plt.show()
@@ -367,14 +320,14 @@ print(county_availablity_price)
 #plotting the data
 plt.figure(figsize = (20, 16))
 county_availablity_price.plot()
-plt.title('Checking correlation between Availability and Price', fontsize = 16)
+plt.title('Checking correlation between Availability and Price', fontsize = 20)
 plt.ylabel('Availability', fontsize = 14)
 plt.xlabel('Price', fontsize = 14)
 
 #plotting the data
 plt.figure(figsize = (12, 8))
 sns.relplot(x = "price", y = "availability_365", data = county_availablity_price);
-plt.title('Checking correlation between Availability and Price', fontsize = 16)
+plt.title('Checking correlation between Availability and Price', fontsize = 20)
 plt.ylabel('Availability', fontsize = 14)
 plt.xlabel('Price', fontsize = 14)
 
@@ -383,6 +336,9 @@ plt.xlabel('Price', fontsize = 14)
 # =============================================================================
 # Getting Dublin
 df_dublin = df[df.county == 'Dublin']
+
+
+df_dublin['neighbourhood_group'].unique()
 
 df_dublin.Parish.unique()
 #array(['Ballyfermot-Drimnagh', 'South East Inner City',
@@ -442,7 +398,7 @@ df_dublin.describe()
 plt.figure(figsize = (12, 8))
 sns.countplot(x = 'parish', data = df_dublin, palette = 'terrain',order = df_dublin['Parish'].value_counts().head(50).index)
 plt.xticks(rotation = 90)
-plt.title('Number of AirBnBs in each Parish in Dublin', fontsize = 16)
+plt.title('Number of AirBnBs in each Parish in Dublin', fontsize = 20)
 plt.ylabel('count', fontsize = 14)
 plt.xlabel('Parish', fontsize = 14)
 plt.show()
@@ -450,7 +406,7 @@ plt.show()
 #plotting the data
 plt.figure(figsize = (12, 8))
 sns.relplot(x = "price", y = "availability_365", data = df_dublin);
-plt.title('Checking correlation between Availability and Price', fontsize = 16)
+plt.title('Checking correlation between Availability and Price', fontsize = 20)
 plt.ylabel('Availability', fontsize = 14)
 plt.xlabel('Price', fontsize = 14)
 
