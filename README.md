@@ -14,12 +14,6 @@ This dataset was collected from [AirBnb website](http://insideairbnb.com/get-the
 The following Business Questions were thought of:
 
 - [ ] What County and City Coucils have the most AirBnB listing?
-- [ ] What County and City Coucils have the highest average price?
-- [ ] What County and City Coucils have the highest average availability?
-
-- [ ] What parishes have the most AirBnB listing?
-- [ ] What parishes have the highest average price?
-- [ ] What parishes have the highest average availability?
 
 - [ ] What counties have the most AirBnB listing?
 - [ ] What counties have the highest average price?
@@ -35,9 +29,6 @@ The following Business Questions were thought of:
 - [ ] What are the most common words in the listings?
 
 - [ ] Create a model to predict price of an AirBnB listing.
-
-
-
 
 # Learning Outcomes
 
@@ -86,24 +77,17 @@ Hence there are less AirBnBlistings for Ulster(ROI).
 | Connacht | 4849 |
 | Ulster | 2344 |
 
+![province_graph](https://github.com/kjonina/AirBnB_Ireland/blob/main/Graphs/province_graph.png)
+Please remember: Ulster only has Donegal, Monaghan and Cavan for Ulster.
+
 
 
 ## Exploring EDA
 
 ### What County and City Councils have the most AirBnB listing?
 
-![council](https://github.com/kjonina/AirBnB_Ireland/blob/main/Graphs/council.png)
-
-### What is the average price for listings in each City and County Council?
-
-
-
-### What parishes have the most AirBnB listing?
-
-![parish](https://github.com/kjonina/AirBnB_Ireland/blob/main/Graphs/parish.png)
-
-### What is the average price for listings in each parishes?
-
+![neighbourhood_group_graph](https://github.com/kjonina/AirBnB_Ireland/blob/main/Graphs/neighbourhood_group_graph.png)
+This graph shows the number of AirBnB listings under each Council. Some councils may choose to limit the number of AirBnBs listings for rent control reasons. 
 
 
 ### What counties have the most AirBnB listing?
@@ -112,6 +96,11 @@ Hence there are less AirBnBlistings for Ulster(ROI).
 
 ### What is the average price for listings in each county?
 
+![county_price_boxplot](https://github.com/kjonina/AirBnB_Ireland/blob/main/Graphs/county_price_boxplot.png)
+
+### What is the average  availabilty in each county?
+
+![county_availability](https://github.com/kjonina/AirBnB_Ireland/blob/main/Graphs/county_availability.png)
 
 
 ### What is the most common room type listed in Ireland?
@@ -123,16 +112,30 @@ There are a huge difference in the room type listing:
 
 | Room Type        | Count         |
 | ---------------- | ------------- |
-| Entire home/apt  | 15433         |
-| Private room     | 11139         |
+| Entire home/apt  | 15349         |
+| Private room     | 11119         |
 | Hotel room       | 320           |
 | Shared room      | 239           |
 
 
 ### What is the average price for listings in each room type?
+![room_price_boxplot](https://github.com/kjonina/AirBnB_Ireland/blob/main/Graphs/room_price_boxplot.png)
+The graph shows the price for each room type
 
-
+### What is the average availablity for Each Room Type?
+![room_availability_graph](https://github.com/kjonina/AirBnB_Ireland/blob/main/Graphs/room_availability_graph.png)
+The graph displays average availablity for each room type. 
 
 
 
 ### What are the most common words in the listings?
+Not Finished
+
+### What are some of the predictors of price?
+Not Finished
+
+# Personal Development
+I came back to this dataset after about a month or two and I found it difficult to read my code or follow exactly where I left off. 
+Note to self: comment better. 
+
+I should also learn to do a loop to go through each county and place into a province. 

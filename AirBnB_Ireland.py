@@ -110,9 +110,11 @@ df['parish'] = (np.where(df['neighbourhood'].str.contains(' LEA'),
 # =============================================================================
 # Checking out Outlier in Price
 # =============================================================================
+sns.set()
+
 
 plt.figure(figsize = (12, 8))
-spotting_outliers = plt.scatter(x= 'availability_365', y = 'price', data = newdf) 
+spotting_outliers = plt.scatter(x= 'availability_365', y = 'price', data = df) 
 plt.title('Checking for outliers in price',  fontsize = 20)
 plt.ylabel('Price [EUR]', fontsize = 14)
 plt.xlabel('availability_365', fontsize = 14)
@@ -145,10 +147,6 @@ print("The dataset has {} rows and {} columns.".format(*df.shape))
 
 
 
-
-
-
-
 #examining the correlation again
 plt.figure(figsize = (12, 8)) 
 spotting_outliers2 = plt.scatter(x= 'availability_365', y = 'price', data = df) 
@@ -158,7 +156,6 @@ plt.xlabel('availability_365', fontsize = 14)
 plt.show()
 
 spotting_outliers2.figure.savefig('spotting_outliers2.png')
-
 
 
 
@@ -188,14 +185,12 @@ print("The dataset has {} rows and {} columns.".format(*newdf.shape))
 #The dataset has 27082 rows and 18 columns.
 
 plt.figure(figsize = (12, 8)) 
-sns.histplot(x="price", data = newdf)
+sns.displot(x="price", data = newdf)
 
 
 # =============================================================================
 # Examining EDA
 # =============================================================================
-
-sns.set()
 
 #examining the data in Councils
 print(newdf.groupby(['neighbourhood_group']).size().sort_values(ascending=False))
@@ -204,7 +199,7 @@ print(newdf.groupby(['neighbourhood_group']).size().sort_values(ascending=False)
 # create a graph
 plt.figure(figsize = (12, 8))
 neighbourhood_group_graph = sns.countplot(y = 'neighbourhood_group', data = newdf, palette = 'terrain',order = newdf['neighbourhood_group'].value_counts().index)
-neighbourhood_group_graph.set_title('Number of AirBnBs listings under each Councils' Supervision', fontsize = 20)
+neighbourhood_group_graph.set_title('Number of AirBnBs listings under each Councils\' Supervision', fontsize = 20)
 neighbourhood_group_graph.set_ylabel('Council', fontsize = 14)
 neighbourhood_group_graph.set_xlabel('Number of AirBnB Listings', fontsize = 14)
 plt.show()
@@ -267,10 +262,10 @@ room_graph.figure.savefig('room_graph.png')
 # Checking correlations between numeric variables
 # =============================================================================
 variables = pd.DataFrame({
-                   'price': df['price'],
-                   'minimum_nights': df['minimum_nights'],
-                   'number_of_reviews': df['number_of_reviews'],
-                   'availability_365': df['availability_365']})
+                   'price': newdf['price'],
+                   'minimum_nights': newdf['minimum_nights'],
+                   'number_of_reviews': newdf['number_of_reviews'],
+                   'availability_365': newdf['availability_365']})
 
 plt.figure(figsize = (12, 8))       
 variables_matrix_heatmap = sns.heatmap(variables.corr(method = 'spearman'), annot = True, cmap = "viridis");
@@ -280,7 +275,7 @@ variables_matrix_heatmap = sns.heatmap(variables.corr(method = 'spearman'), anno
 variables_matrix_heatmap.figure.savefig('variables_matrix_heatmap.png')
 
 plt.figure(figsize = (12, 8)) 
-plt.scatter(x= 'availability_365', y = 'price', data = df) 
+plt.scatter(x= 'availability_365', y = 'price', data = newdf) 
 plt.ylabel('availability_365', fontsize = 14)
 plt.xlabel('price', fontsize = 14)
 plt.show()
@@ -356,6 +351,7 @@ price_province_boxplot = sns.boxplot(x = 'province', y = 'price',
 price_province_boxplot.set_title('Price of Room per Night for Room Type in each Province', fontsize = 20)
 price_province_boxplot.set_ylabel('Price [EUR]', fontsize = 14)
 price_province_boxplot.set_xlabel('Province', fontsize = 14)
+price_province_boxplot.set_ylim(0,300)
 plt.show()
 
 
@@ -369,7 +365,7 @@ print(province_availability)
 
 plt.figure(figsize = (12, 8))
 province_availability_graph = sns.barplot(x = 'province', y= 'availability_365', data = province_availability.reset_index(), palette = 'terrain')
-province_availability_graph.set_title('Availability for Each Room Type', fontsize = 20)
+province_availability_graph.set_title('Average Availability in Each Province', fontsize = 20)
 province_availability_graph.set_ylabel('Number of Room Types', fontsize = 14)
 province_availability_graph.set_xlabel('Room Type', fontsize = 14)
 plt.show()
@@ -401,16 +397,16 @@ room_price_avaibility.groupby('room_type')['price'].describe()
 
 # boxplot for  price for the room 
 plt.figure(figsize = (12, 8))
-price_room_boxplot = sns.boxplot(x = 'room_type', y = 'price',
+room_price_boxplot = sns.boxplot(x = 'room_type', y = 'price',
             data = room_price_avaibility, fliersize = 0)
-price_room_boxplot.set_title('Price of Room per Night for Room Type', fontsize = 20)
-price_room_boxplot.set_ylabel('Price [EUR]', fontsize = 14)
-price_room_boxplot.set_xlabel('Room Type', fontsize = 14)
-price_room_boxplot.set_ylim(0,300)
+room_price_boxplot.set_title('Price of Room per Night for Room Type', fontsize = 20)
+room_price_boxplot.set_ylabel('Price [EUR]', fontsize = 14)
+room_price_boxplot.set_xlabel('Room Type', fontsize = 14)
+room_price_boxplot.set_ylim(0,300)
 plt.show()
 
 #Save the graph
-price_room_boxplot.figure.savefig('price_room_boxplot.png')
+room_price_boxplot.figure.savefig('room_price_boxplot.png')
 
 
 
@@ -426,7 +422,7 @@ print(room_availability)
 
 plt.figure(figsize = (12, 8))
 room_availability_graph = sns.barplot(x = 'room_type', y= 'availability_365', data = room_availability.reset_index(), palette = 'terrain')
-room_availability_graph.set_title('Availability for Each Room Type', fontsize = 20)
+room_availability_graph.set_title('Average Availability for Each Room Type', fontsize = 20)
 room_availability_graph.set_ylabel('Number of Room Types', fontsize = 14)
 room_availability_graph.set_xlabel('Room Type', fontsize = 14)
 plt.show()
@@ -440,9 +436,13 @@ room_availability_graph.figure.savefig('room_availability_graph.png')
 # =============================================================================
 # checking AirBnBs per Parishes
 parish_price_availability = pd.DataFrame({'parish': newdf['parish'],
-                   'county': newdf['county'],
                    'availability_365': newdf['availability_365'],
                    'price': newdf['price']})
+
+
+
+parish_price_availability['parish'].unique()
+
 
 #examining the number of listings in each parish
 plt.figure(figsize = (12, 12))
@@ -455,10 +455,12 @@ plt.show()
 #Save the graph
 parish_listings.figure.savefig('parish_listings.png')
 
+parish_price_availability['parish'].unique()
+
 
 
 #examining which parishes have the HIGHEST AVERAGE PRICE per listing (per night)
-parish_price_availability.groupby('parish')['price'].mean().sort_values(ascending=False).head(10)
+top10_parish_average_price = parish_price_availability.groupby('parish')['price'].mean().sort_values(ascending=False).head(10)
 #Ongar                    170.854545
 #Dundalk-Carlingford      164.774566
 #Bandon - Kinsale         151.003289
@@ -485,17 +487,17 @@ parish_price_availability['parish'].value_counts().head(10)
 
 # boxplot for  price for the hotel type for Per Person
 plt.figure(figsize = (12, 8))
-price_parish_boxplot = sns.boxplot(x = 'parish', y = 'price',
+parish_price_boxplot = sns.boxplot(x = 'parish', y = 'price',
             data = parish_price_availability, fliersize = 0,order = parish_price_availability['parish'].value_counts().head(10).index)
-price_parish_boxplot.set_title('Booking Price per Night for Top 10 Parishes', fontsize = 20)
-price_parish_boxplot.set_ylabel('Price [EUR]', fontsize = 14)
-price_parish_boxplot.set_xlabel('Parish', fontsize = 14)
-price_parish_boxplot.set_ylim(0,400)
-price_parish_boxplot.set_xticklabels(price_parish_boxplot.get_xticklabels(), rotation = 45)
+parish_price_boxplot.set_title('Booking Price per Night for Top 10 Parishes', fontsize = 20)
+parish_price_boxplot.set_ylabel('Price [EUR]', fontsize = 14)
+parish_price_boxplot.set_xlabel('Parish', fontsize = 14)
+parish_price_boxplot.set_ylim(0,400)
+parish_price_boxplot.set_xticklabels(parish_price_boxplot.get_xticklabels(), rotation = 45)
 plt.show()
 
 #Save the graph
-price_parish_boxplot.figure.savefig('price_parish_boxplot.png')
+parish_price_boxplot.figure.savefig('parish_price_boxplot.png')
 
 
 ''' NEEDS FIXING!
@@ -517,35 +519,115 @@ plt.show()
 parish_availability_graph.figure.savefig('parish_availability_graph.png')
 '''
 
-
-
 # =============================================================================
-# Checking county by Availability 365 and Price
+# Price and avaialblity for each country
 # =============================================================================
 
-county_availablity_price = newdf.groupby(
-        ['county']
-        )['availability_365', 'price']
+# checking AirBnBs per Parishes
+county_price_availability = pd.DataFrame({'county': newdf['county'],
+                   'availability_365': newdf['availability_365'],
+                   'price': newdf['price']})
+
+county_price_availability.groupby('county')['price'].describe()
+#            count        mean         std   min   25%   50%     75%     max
+#county                                                                     
+#Carlow      175.0  110.097143  167.123971  20.0  45.0  76.0  105.50  1500.0
+#Cavan       193.0   93.373057   94.213221  25.0  50.0  70.0  103.00  1000.0
+#Clare      1531.0  113.157413   97.639791  11.0  65.0  89.0  130.00  1714.0
+#Cork       2366.0  108.564243  102.714576  17.0  55.0  81.0  123.75  1175.0
+#Donegal    2043.0  104.355849   83.485084  19.0  62.0  88.0  121.00  1500.0
+#Dublin     8003.0  112.086717  111.636336   0.0  50.0  80.0  129.50  1757.0
+#Galway     2671.0  111.821415  116.667426  12.0  56.0  85.0  124.00  1500.0
+#Kerry      2923.0  116.277797   86.679523  17.0  70.0  96.0  137.00  1243.0
+#Kildare     338.0   92.639053  125.752170   0.0  45.0  66.0  100.00  1500.0
+#Kilkenny    435.0  133.818391  180.632176  15.0  60.0  83.0  125.00  1450.0
+#Laois       171.0   85.637427   98.896664  24.0  40.0  60.0  100.00  1000.0
+#Leitrim     270.0  115.388889   95.413017  20.0  60.0  80.5  135.75   614.0
+#Limerick    419.0   84.942721  105.309144  15.0  44.0  65.0   99.00  1350.0
+#Longford     55.0  106.490909  189.248501  20.0  44.0  70.0   94.00  1095.0
+#Louth       345.0  140.597101  150.291374  20.0  63.0  98.0  154.00  1625.0
+#Mayo       1278.0  105.061815   98.243342  19.0  58.0  85.0  120.00  1395.0
+#Meath       420.0  105.900000  148.547300  19.0  45.0  71.0  111.00  1500.0
+#Monaghan    128.0   90.984375   65.858472  21.0  45.0  67.0  122.25   320.0
+#Offaly      149.0   89.449664   70.248924  12.0  50.0  71.0  100.00   540.0
+#Roscommon   204.0  102.916667   88.096219  13.0  50.0  75.0  125.25   604.0
+#Sligo       507.0   97.767258   86.109712  15.0  60.0  80.0  115.50  1440.0
+#Tipperary   456.0  125.421053  189.944602  12.0  50.0  75.0  120.00  1729.0
+#Waterford   504.0  108.039683   80.444728  18.0  60.0  90.0  130.00   660.0
+#Westmeath   228.0  110.855263  120.400181  22.0  55.0  74.0  130.00  1143.0
+#Wexford     719.0  106.824757   84.556041  25.0  60.0  89.0  125.00  1143.0
+#Wicklow     551.0  108.903811  130.203211   0.0  54.0  79.0  120.00  1816.0
+
+ 
+
+# boxplot for  price for the room 
+plt.figure(figsize = (80, 8))
+county_price_boxplot = sns.boxplot(x = 'county', y = 'price',
+            data = county_price_availability, fliersize = 0)
+county_price_boxplot.set_title('Price of Room per Night in Each County', fontsize = 20)
+county_price_boxplot.set_ylabel('Price [EUR]', fontsize = 14)
+county_price_boxplot.set_xlabel('Country', fontsize = 14)
+county_price_boxplot.set_ylim(0,300)
+plt.show()
+
+#Save the graph
+county_price_boxplot.figure.savefig('county_price_boxplot.png')
 
 
-print(county_availablity_price.describe())
+
+# Average availability for each room type
+county_availability = county_price_availability.groupby('county')['availability_365'].mean().sort_values(ascending=False)
+print(county_availability)
+#Cavan        213.844560
+#Donegal      201.613314
+#Louth        199.423188
+#Westmeath    195.881579
+#Roscommon    192.745098
+#Laois        191.584795
+#Kerry        191.127609
+#Tipperary    191.081140
+#Monaghan     190.710938
+#Mayo         190.501565
+#Leitrim      189.659259
+#Offaly       176.577181
+#Clare        174.453298
+#Limerick     173.205251
+#Wicklow      167.646098
+#Cork         163.675402
+#Galway       162.411831
+#Sligo        161.842209
+#Meath        158.119048
+#Longford     157.454545
+#Carlow       155.222857
+#Kilkenny     150.326437
+#Waterford    149.537698
+#Wexford      143.876217
+#Kildare      141.106509
+#Dublin        68.934650
+#Name: availability_365, dtype: float64
 
 
-#plotting the data
-plt.figure(figsize = (20, 16))
-county_availablity_price.plot()
-plt.title('Checking correlation between Availability and Price', fontsize = 20)
-plt.ylabel('Availability', fontsize = 14)
-plt.xlabel('Price', fontsize = 14)
 
 
-
-#plotting the data
 plt.figure(figsize = (12, 8))
-sns.relplot(x = "price", y = "availability_365", data = county_availablity_price);
-plt.title('Checking correlation between Availability and Price', fontsize = 20)
-plt.ylabel('Availability', fontsize = 14)
-plt.xlabel('Price', fontsize = 14)
+county_availability_graph = sns.barplot(x= "county", y = "availability_365", data = county_availability.reset_index(),
+                 palette = 'magma')
+county_availability_graph.set_title('Average Availability in Each County', fontsize = 20)
+county_availability_graph.set_ylabel('Average Availability in Each County', fontsize = 14)
+county_availability_graph.set_xlabel('Counties', fontsize = 14)
+county_availability_graph.set_xticklabels(county_availability_graph.get_xticklabels(), rotation=45)
+plt.show()
+
+
+#Save the graph
+county_availability_graph.figure.savefig('county_availability_graph.png')
+
+
+'''
+1 CREATE A HEATMAP OF NUMBER OF AIRBNB LISTINGS IN EACH COUNTY
+2 STEM WORDS
+3 RUN A LOGISTICAL REGRESSION FOR PRICE
+'''
 
 
 # =============================================================================
@@ -616,10 +698,6 @@ sns.relplot(x = "price", y = "availability_365", data = newdf_dublin);
 plt.title('Checking correlation between Availability and Price', fontsize = 20)
 plt.ylabel('Availability', fontsize = 14)
 plt.xlabel('Price', fontsize = 14)
-
-
-sns.catplot(x="price", y="availability_365", data = newdf_dublin)
-
 
 # =============================================================================
 # Examining Top Hosts in ROI
