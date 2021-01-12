@@ -87,10 +87,10 @@ df['county'] = (np.where(df['county2'].str.contains('South '),
 
 #Must change Dun Laoighre and Fingal to Dublin for it to be County
 df.neighbourhood_group.unique()
-df['county'] = df['county'].str.replace('Dun Laoghaire-rathdown','Dublin')
-df['county'] = df['county'].str.replace('Fingal','Dublin')
 
 # dropping county1
+df['county'] = df['county'].str.replace('Dun Laoghaire-rathdown','Dublin')
+df['county'] = df['county'].str.replace('Fingal','Dublin')
 df.drop('county1',axis=1,inplace=True)
 
 # dropping county2
@@ -106,6 +106,91 @@ df['parish'] = (np.where(df['neighbourhood'].str.contains(' LEA'),
                   df['neighbourhood'].str.split(' LEA').str[0],
                   df['neighbourhood']))
 
+
+# =============================================================================
+# Checking out Outlier in Price
+# =============================================================================
+
+plt.figure(figsize = (12, 8))
+spotting_outliers = plt.scatter(x= 'availability_365', y = 'price', data = newdf) 
+plt.title('Checking for outliers in price',  fontsize = 20)
+plt.ylabel('Price [EUR]', fontsize = 14)
+plt.xlabel('availability_365', fontsize = 14)
+plt.show()
+
+#Save the graph
+spotting_outliers.figure.savefig('spotting_outliers.png')
+
+
+
+# =============================================================================
+# Eliminating Outlier in Price
+# =============================================================================
+print("The dataset has {} rows and {} columns.".format(*df.shape))
+#The dataset has 27131 rows and 17 columns.
+
+#Normalising the price 
+df['z_score']=stats.zscore(df['price'])
+
+#checking the outlier
+outlier = df.loc[df['z_score'].abs()>3]
+print(outlier)
+# The outlier shown is correct. THe price is 1173721
+
+#Removing that single outlier 
+df = df.loc[df['z_score'].abs()<=3]
+
+print("The dataset has {} rows and {} columns.".format(*df.shape))
+#The dataset has 27130 rows and 18 columns.
+
+
+
+
+
+
+
+#examining the correlation again
+plt.figure(figsize = (12, 8)) 
+spotting_outliers2 = plt.scatter(x= 'availability_365', y = 'price', data = df) 
+plt.title('Examining other outliers in the dataset in Price', fontsize = 20)
+plt.ylabel('Price [EUR]', fontsize = 14)
+plt.xlabel('availability_365', fontsize = 14)
+plt.show()
+
+spotting_outliers2.figure.savefig('spotting_outliers2.png')
+
+
+
+
+#Normalising the price 
+df['z_score']=stats.zscore(df['price'])
+
+#checking the outlier
+outlier = df.loc[df['z_score'].abs()>3]
+print(outlier)
+# The outlier shown is correct. THe price is 1173721
+
+#Removing that single outlier 
+newdf = df.loc[df['z_score'].abs()<=3]
+
+#examining the correlation again
+plt.figure(figsize = (12, 8)) 
+final_data = plt.scatter(x= 'availability_365', y = 'price', data = newdf) 
+plt.title('Final Data After Removing all Z-Scores above 3', fontsize = 20)
+plt.ylabel('availability_365', fontsize = 14)
+plt.xlabel('Price [EUR]', fontsize = 14)
+plt.show()
+
+final_data.figure.savefig('final_data.png')
+
+
+print("The dataset has {} rows and {} columns.".format(*newdf.shape))
+#The dataset has 27082 rows and 18 columns.
+
+plt.figure(figsize = (12, 8)) 
+sns.histplot(x="price", data = newdf)
+
+
 # =============================================================================
 # Examining EDA
 # =============================================================================
@@ -113,59 +198,69 @@ df['parish'] = (np.where(df['neighbourhood'].str.contains(' LEA'),
 sns.set()
 
 #examining the data in Councils
-print(df.groupby(['neighbourhood_group']).size().sort_values(ascending=False))
+print(newdf.groupby(['neighbourhood_group']).size().sort_values(ascending=False))
 
 
 # create a graph
 plt.figure(figsize = (12, 8))
-sns.countplot(y = 'neighbourhood_group', data = df, palette = 'terrain',order = df['neighbourhood_group'].value_counts().index)
-plt.title('Number of AirBnBs listings under each Councils\' Supervision', fontsize = 20)
-plt.ylabel('Councils', fontsize = 14)
-plt.xlabel('Number of AirBnBs', fontsize = 14)
+neighbourhood_group_graph = sns.countplot(y = 'neighbourhood_group', data = newdf, palette = 'terrain',order = newdf['neighbourhood_group'].value_counts().index)
+neighbourhood_group_graph.set_title('Number of AirBnBs listings under each Councils' Supervision', fontsize = 20)
+neighbourhood_group_graph.set_ylabel('Council', fontsize = 14)
+neighbourhood_group_graph.set_xlabel('Number of AirBnB Listings', fontsize = 14)
 plt.show()
 
-
+#Save the graph
+neighbourhood_group_graph.figure.savefig('neighbourhood_group_graph.png')
 
 
 # examining data in Parishes
-print(df.groupby(['parish']).size().sort_values(ascending=False))
+print(newdf.groupby(['parish']).size().sort_values(ascending=False))
 
 # create a graph for Parishes
 plt.figure(figsize = (12, 8))
-sns.countplot(y = 'parish', data = df, palette = 'terrain',order = df['parish'].value_counts().head(20).index)
-plt.xticks(rotation = 90)
-plt.title('Number of AirBnBs Listings in Top 20 Parish', fontsize = 20)
-plt.ylabel('List of Parishes', fontsize = 14)
-plt.xlabel('Number of AirBnBs', fontsize = 14)
-plt.show()
+parish_graph = sns.countplot(y = 'parish', data = newdf, palette = 'terrain',order = newdf['parish'].value_counts().head(20).index)
+parish_graph.set_title('Number of AirBnBs Listings in Top 20 Parish', fontsize = 20)
+parish_graph.set_ylabel('List of Parishes', fontsize = 14)
+parish_graph.set_xlabel('Number of AirBnB Listings', fontsize = 14)
 plt.show()
 
+#Save the graph
+parish_graph.figure.savefig('parish_graph.png')
+
+
 # examining data in Parishes
-print(df.groupby(['county']).size().sort_values(ascending=False))
+print(newdf.groupby(['county']).size().sort_values(ascending=False))
 
 #creating a graph of counties
 plt.figure(figsize = (12, 8))
-sns.countplot(y = 'county', data = df, palette = 'magma',order = df['county'].value_counts().index)
-plt.title('Number of AirBnBs in Each County', fontsize = 20)
-plt.ylabel('List of Country', fontsize = 14)
-plt.xlabel('Number of AirBnBs', fontsize = 14)
+county_graph = sns.countplot(y = 'county', data = newdf, palette = 'magma',order = newdf['county'].value_counts().index)
+county_graph.set_title('Number of AirBnBs Listings in Each County', fontsize = 20)
+county_graph.set_ylabel('List of Counties', fontsize = 14)
+county_graph.set_xlabel('Number of AirBnB Listings', fontsize = 14)
 plt.show()
+
+#Save the graph
+parish_graph.figure.savefig('parish_graph.png')
+
 
 
 # checking for unique values
-df.room_type.unique()
+newdf.room_type.unique()
 
 # counting numbers of Room Types
-df.groupby(['room_type']).size().sort_values(ascending=False)
+newdf.groupby(['room_type']).size().sort_values(ascending=False)
 
 
 #Plot the graph of Room Type
 plt.figure(figsize = (12, 8))
-sns.countplot(y = 'room_type', data = df, palette = 'terrain',order = df['room_type'].value_counts().index)
-plt.title('Number of Room Types', fontsize = 20)
-plt.ylabel('Room Type', fontsize = 14)
-plt.xlabel('count', fontsize = 14)
+room_graph = sns.countplot(x= 'room_type', data = newdf, palette = 'terrain',order = newdf['room_type'].value_counts().index)
+room_graph.set_title('Number of AirBnBs Listings for Each Room Type', fontsize = 20)
+room_graph.set_xlabel('Room Type', fontsize = 14)
+room_graph.set_ylabel('Number of AirBnB Listings', fontsize = 14)
 plt.show()
+
+#Save the graph
+room_graph.figure.savefig('room_graph.png')
 
 
 # =============================================================================
@@ -189,46 +284,6 @@ plt.scatter(x= 'availability_365', y = 'price', data = df)
 plt.ylabel('availability_365', fontsize = 14)
 plt.xlabel('price', fontsize = 14)
 plt.show()
-
-
-# =============================================================================
-# Eliminating Outlier in Price
-# =============================================================================
-print("The dataset has {} rows and {} columns.".format(*df.shape))
-#The dataset has 27131 rows and 17 columns.
-
-#Normalising the price 
-df['z_score']=stats.zscore(df['price'])
-
-#checking the outlier
-outlier = df.loc[df['z_score'].abs()>3]
-print(outlier)
-# The outlier shown is correct. THe price is 1173721
-
-#Removing that single outlier 
-df = df.loc[df['z_score'].abs()<=3]
-
-#examining the correlation again
-plt.figure(figsize = (12, 8)) 
-plt.scatter(x= 'availability_365', y = 'price', data = df) 
-plt.ylabel('availability_365', fontsize = 14)
-plt.xlabel('price', fontsize = 14)
-plt.show()
-
-#print("The dataset has {} rows and {} columns.".format(*df.shape))
-#The dataset has 27130 rows and 18 columns.
-
-# Decided that the data examined will be all under 1000
-newdf = df.loc[df['price'].abs()<=1000]
-#examining the correlation again
-plt.figure(figsize = (12, 8)) 
-plt.scatter(x= 'availability_365', y = 'price', data = newdf) 
-plt.ylabel('availability_365', fontsize = 14)
-plt.xlabel('price', fontsize = 14)
-plt.show()
-
-print("The dataset has {} rows and {} columns.".format(*newdf.shape))
-#The dataset has 27027 rows and 18 columns.
 
 # =============================================================================
 # Creating new variable: province 
@@ -313,16 +368,15 @@ print(province_availability)
 #ulster      201.878840
 
 plt.figure(figsize = (12, 8))
-room_availability_graph = sns.barplot(x = 'room_type', y= 'availability_365', data = room_availability.reset_index(), palette = 'terrain')
-
-room_availability_graph.set_title('Availability for Each Room Type', fontsize = 20)
-room_availability_graph.set_ylabel('Number of Room Types', fontsize = 14)
-room_availability_graph.set_xlabel('Room Type', fontsize = 14)
+province_availability_graph = sns.barplot(x = 'province', y= 'availability_365', data = province_availability.reset_index(), palette = 'terrain')
+province_availability_graph.set_title('Availability for Each Room Type', fontsize = 20)
+province_availability_graph.set_ylabel('Number of Room Types', fontsize = 14)
+province_availability_graph.set_xlabel('Room Type', fontsize = 14)
 plt.show()
 
 
 #Save the graph
-room_availability_graph.figure.savefig('room_availability_graph.png')
+province_availability_graph.figure.savefig('province_availability_graph.png')
 
 
 
@@ -372,7 +426,6 @@ print(room_availability)
 
 plt.figure(figsize = (12, 8))
 room_availability_graph = sns.barplot(x = 'room_type', y= 'availability_365', data = room_availability.reset_index(), palette = 'terrain')
-
 room_availability_graph.set_title('Availability for Each Room Type', fontsize = 20)
 room_availability_graph.set_ylabel('Number of Room Types', fontsize = 14)
 room_availability_graph.set_xlabel('Room Type', fontsize = 14)
