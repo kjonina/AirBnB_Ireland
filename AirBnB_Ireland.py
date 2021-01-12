@@ -272,12 +272,58 @@ newdf['province'].value_counts().sort_values(ascending=False)
 #connacht     4849
 #ulster       2344
 
+
 plt.figure(figsize = (12, 8))
-sns.countplot(y = 'province', data = newdf, palette = 'terrain',order = newdf['province'].value_counts().index)
-plt.title('Number of Room Types', fontsize = 20)
-plt.ylabel('Province', fontsize = 14)
-plt.xlabel('Number of AirBnB listings', fontsize = 14)
+province_graph = sns.countplot(x = 'province', data = newdf, palette = 'terrain',order = newdf['province'].value_counts().index)
+province_graph.set_title('Number of AirBnB Listings in Each Province', fontsize = 20)
+province_graph.set_ylabel('Number of of AirBnB Listings', fontsize = 14)
+province_graph.set_xlabel('Province', fontsize = 14)
 plt.show()
+
+#Save the graph
+province_graph.figure.savefig('province_graph.png')
+
+# =============================================================================
+# Checking price and availablitiy for each province
+# =============================================================================
+province_price_avaibility = pd.DataFrame({'province': newdf['province'],
+                   'availability_365': newdf['availability_365'],
+                   'price': newdf['price']})
+
+
+
+province_price_avaibility.groupby('province')['price'].describe()
+
+# boxplot for  price for the room 
+plt.figure(figsize = (12, 8))
+price_province_boxplot = sns.boxplot(x = 'province', y = 'price',
+            data = province_price_avaibility, fliersize = 0)
+price_province_boxplot.set_title('Price of Room per Night for Room Type in each Province', fontsize = 20)
+price_province_boxplot.set_ylabel('Price [EUR]', fontsize = 14)
+price_province_boxplot.set_xlabel('Province', fontsize = 14)
+plt.show()
+
+
+# Average availability in each province
+province_availability = province_price_avaibility.groupby('province')['availability_365'].mean()
+print(province_availability)
+#connacht    171.626933
+#leinster     97.097119 - renting out for the summer?
+#munster     175.928368
+#ulster      201.878840
+
+plt.figure(figsize = (12, 8))
+room_availability_graph = sns.barplot(x = 'room_type', y= 'availability_365', data = room_availability.reset_index(), palette = 'terrain')
+
+room_availability_graph.set_title('Availability for Each Room Type', fontsize = 20)
+room_availability_graph.set_ylabel('Number of Room Types', fontsize = 14)
+room_availability_graph.set_xlabel('Room Type', fontsize = 14)
+plt.show()
+
+
+#Save the graph
+room_availability_graph.figure.savefig('room_availability_graph.png')
+
 
 
 # =============================================================================
@@ -299,7 +345,7 @@ room_price_avaibility.groupby('room_type')['price'].describe()
 
  
 
-# boxplot for  price for the hotel type for Per Person
+# boxplot for  price for the room 
 plt.figure(figsize = (12, 8))
 price_room_boxplot = sns.boxplot(x = 'room_type', y = 'price',
             data = room_price_avaibility, fliersize = 0)
@@ -314,7 +360,7 @@ price_room_boxplot.figure.savefig('price_room_boxplot.png')
 
 
 
-# Average price for each room type
+# Average availability for each room type
 room_availability = room_price_avaibility.groupby('room_type')['availability_365'].mean()
 print(room_availability)
 #Entire home/apt    154.516879
@@ -335,18 +381,6 @@ plt.show()
 
 #Save the graph
 room_availability_graph.figure.savefig('room_availability_graph.png')
-
-
-''' 
-TO Do list
-
-- create boxplots for price and availablitiy for each room type and each county?
-
-
-- create a variable Munster, Leinster and Connaught?
-
-'''
-
 
 # =============================================================================
 # Checking price and availablitiy for each parish
