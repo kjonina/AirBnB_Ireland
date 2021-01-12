@@ -56,7 +56,7 @@ New Variables were created such as County.  County is an important variable beca
 
 ## Exploring EDA
 
-### What County and City Coucils have the most AirBnB listing?
+### What County and City Councils have the most AirBnB listing?
 
 ![council](https://github.com/kjonina/AirBnB_Ireland/blob/main/Graphs/council.png)
 
@@ -80,7 +80,7 @@ New Variables were created such as County.  County is an important variable beca
 
 
 
-### What is the most common room type listed in Ireland?**
+### What is the most common room type listed in Ireland?
 
 ![room_type](https://github.com/kjonina/AirBnB_Ireland/blob/main/Graphs/room_type.png)
 

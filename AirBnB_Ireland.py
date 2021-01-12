@@ -19,6 +19,7 @@ import warnings # current version of seaborn generates a bunch of warnings that 
 warnings.filterwarnings("ignore")
 from wordcloud import WordCloud
 from sklearn.feature_extraction.text import CountVectorizer #Bag of Words
+from scipy import stats
 
 # read the CSV file
 df = pd.read_csv('listings.csv')
@@ -29,29 +30,22 @@ pd.set_option('display.max_columns', None)
 # prints out the top 5 values for the datasef
 print(df.head())
 
-# checking the df shape
-print(df.shape)
-#(27131, 16)
+# checking shape
+print("The dataset has {} rows and {} columns.".format(*df.shape))
 
+# ... and duplicates
+print("It contains {} duplicates.".format(df.duplicated().sum()))
 
 # prints out names of columns
 print(df.columns)
-#Index(['id', 'name', 'host_id', 'host_name', 'neighbourhood_group',
-#       'neighbourhood', 'latitude', 'longitude', 'room_type', 'price',
-#       'minimum_nights', 'number_of_reviews', 'number_of_reviews_ltm',
-#       'last_review', 'calculated_host_listings_count', 'availability_365'],
-#      dtype='object')
 
 
-# This tells us which variables are object, int64 and float 64. This would mean that 
-# some of the object variables might have to be changed into a categorical variables and int64 to float64 
-# depending on our analysis.
+
+# This tells us which variables are object, int64 and float 64. 
 print(df.info())
-
 
 # checking for missing data
 df.isnull().sum() 
-
 
 # getting the statistics such as the mean, standard deviation, min and max for numerical variables
 print(df.describe()) 
@@ -115,17 +109,19 @@ df['parish'] = (np.where(df['neighbourhood'].str.contains(' LEA'),
 # =============================================================================
 # Examining EDA
 # =============================================================================
+
+sns.set()
+
 #examining the data in Councils
 print(df.groupby(['neighbourhood_group']).size().sort_values(ascending=False))
 
-sns.set()
 
 # create a graph
 plt.figure(figsize = (12, 8))
 sns.countplot(y = 'neighbourhood_group', data = df, palette = 'terrain',order = df['neighbourhood_group'].value_counts().index)
 plt.title('Number of AirBnBs listings under each Councils\' Supervision', fontsize = 20)
 plt.ylabel('Councils', fontsize = 14)
-plt.xlabel('count', fontsize = 14)
+plt.xlabel('Number of AirBnBs', fontsize = 14)
 plt.show()
 
 
@@ -134,188 +130,319 @@ plt.show()
 # examining data in Parishes
 print(df.groupby(['parish']).size().sort_values(ascending=False))
 
-# create a graph
+# create a graph for Parishes
 plt.figure(figsize = (12, 8))
 sns.countplot(y = 'parish', data = df, palette = 'terrain',order = df['parish'].value_counts().head(20).index)
 plt.xticks(rotation = 90)
 plt.title('Number of AirBnBs Listings in Top 20 Parish', fontsize = 20)
 plt.ylabel('List of Parishes', fontsize = 14)
-plt.xlabel('count', fontsize = 14)
+plt.xlabel('Number of AirBnBs', fontsize = 14)
 plt.show()
 plt.show()
 
-# =============================================================================
-# Analysing countries
-# =============================================================================
+# examining data in Parishes
+print(df.groupby(['county']).size().sort_values(ascending=False))
 
 #creating a graph of counties
 plt.figure(figsize = (12, 8))
-sns.countplot(y = 'county', data = df, palette = 'terrain',order = df['county'].value_counts().index)
+sns.countplot(y = 'county', data = df, palette = 'magma',order = df['county'].value_counts().index)
 plt.title('Number of AirBnBs in Each County', fontsize = 20)
 plt.ylabel('List of Country', fontsize = 14)
-plt.xlabel('coun', fontsize = 14)
+plt.xlabel('Number of AirBnBs', fontsize = 14)
 plt.show()
 
 
-
-
-# checking AirBnBs per Parishes
-county_price_AV = pd.DataFrame({'county': df['county'],
-                   'availability_365': df['availability_365'],
-                   'price': df['price']})
-
-county_price = county_price_AV.groupby(
-        ['county']
-        )['price']
-
-# Checking for outliers
-print(county_price.describe())
-
-#order by the mean
-county_price.mean().sort_values(ascending=False)
-
-
-
-# =============================================================================
-# Parishes
-# =============================================================================
-
-# checking AirBnBs per Parishes
-parish_price_AV = pd.DataFrame({'parish': df['Parish'],
-                   'county': df['county'],
-                   'availability_365': df['availability_365'],
-                   'price': df['price']})
-
-#Examining top 5 location of listings for AirBnb
-parish_price_AV.groupby(['A', 'B']).size().sort_values(ascending=False)
-#North Inner City       Dublin      1531
-#South East Inner City  Dublin      1350
-#Kenmare                Kerry       1102
-#South West Inner City  Dublin       828
-#Ennistimon             Clare        818
-
-
-
-parish_price = parish_price_AV.groupby(
-        ['parish', 'county']
-        )['price']
-
-print(parish_price.describe())
-
-parish_price.mean().sort_values(ascending=False)
-#Kimmage-Rathmines          Dublin       2990.784314
-#Conamara North             Galway        420.126482
-#Cappamore-Kilmallock       Limerick      382.763889
-#Laytown  Bettystown-lea-7  Meath         290.789916
-#Dundalk South              Louth         242.596154
-#Rosslare                   Wexford       219.176190
-#Granard                    Longford      213.894737
-#Lismore                    Waterford     200.163934
-#South West Inner City      Dublin        195.751208
-#Dundalk-Carlingford        Louth         189.312500
-#Kenmare                    Kerry         187.952813
-#Conamara South             Galway        172.287197
-#Ongar                      Dublin        170.854545
-#Callan-Thomastown          Kilkenny      165.994253
-#Naas                       Kildare       164.661290
-
-plt.figure(figsize = (12, 8))
-sns.countplot(x = 'Parish', data = df, palette = 'terrain',order = df['Parish'].value_counts().head(50).index)
-plt.xticks(rotation = 90)
-plt.title('Number of AirBnBs in each Top 50 Parish', fontsize = 20)
-plt.ylabel('count', fontsize = 14)
-plt.xlabel('Parish', fontsize = 14)
-plt.show()
-
-
-# =============================================================================
-# Checking Room Type
-# =============================================================================
 # checking for unique values
 df.room_type.unique()
-#array(['Private room', 'Entire home/apt', 'Shared room', 'Hotel room'],
-#      dtype=object)
-
 
 # counting numbers of Room Types
 df.groupby(['room_type']).size().sort_values(ascending=False)
-#Entire home/apt    15433
-#Private room       11139
-#Hotel room           320
-#Shared room          239
+
 
 #Plot the graph of Room Type
 plt.figure(figsize = (12, 8))
-sns.countplot(x = 'room_type', data = df, palette = 'terrain',order = df['room_type'].value_counts().index)
-plt.xticks(rotation = 90)
+sns.countplot(y = 'room_type', data = df, palette = 'terrain',order = df['room_type'].value_counts().index)
 plt.title('Number of Room Types', fontsize = 20)
-plt.ylabel('count', fontsize = 14)
-plt.xlabel('Room Types', fontsize = 14)
+plt.ylabel('Room Type', fontsize = 14)
+plt.xlabel('count', fontsize = 14)
 plt.show()
 
 
 # =============================================================================
-# Checking Room Type by Availability 365 and Price
+# Checking correlations between numeric variables
 # =============================================================================
+variables = pd.DataFrame({
+                   'price': df['price'],
+                   'minimum_nights': df['minimum_nights'],
+                   'number_of_reviews': df['number_of_reviews'],
+                   'availability_365': df['availability_365']})
 
-room_type_availablity = df.groupby(
-        ['room_type']
-        )['availability_365', 'price'].mean()
-
-#                 availability_365       price
-#room_type                                    
-#Entire home/apt        154.516879  248.731873
-#Hotel room             168.050000   96.550000
-#Private room           130.476524   76.074064
-#Shared room            115.962343   56.108787
+plt.figure(figsize = (12, 8))       
+variables_matrix_heatmap = sns.heatmap(variables.corr(method = 'spearman'), annot = True, cmap = "viridis");
 
 
-#Plot the graph of Room Type by Availability 365 and Price
-room_type_availablity.plot()
+
+variables_matrix_heatmap.figure.savefig('variables_matrix_heatmap.png')
+
+plt.figure(figsize = (12, 8)) 
+plt.scatter(x= 'availability_365', y = 'price', data = df) 
+plt.ylabel('availability_365', fontsize = 14)
+plt.xlabel('price', fontsize = 14)
+plt.show()
+
+
+# =============================================================================
+# Eliminating Outlier in Price
+# =============================================================================
+print("The dataset has {} rows and {} columns.".format(*df.shape))
+#The dataset has 27131 rows and 17 columns.
+
+#Normalising the price 
+df['z_score']=stats.zscore(df['price'])
+
+#checking the outlier
+outlier = df.loc[df['z_score'].abs()>3]
+print(outlier)
+# The outlier shown is correct. THe price is 1173721
+
+#Removing that single outlier 
+df = df.loc[df['z_score'].abs()<=3]
+
+#examining the correlation again
+plt.figure(figsize = (12, 8)) 
+plt.scatter(x= 'availability_365', y = 'price', data = df) 
+plt.ylabel('availability_365', fontsize = 14)
+plt.xlabel('price', fontsize = 14)
+plt.show()
+
+#print("The dataset has {} rows and {} columns.".format(*df.shape))
+#The dataset has 27130 rows and 18 columns.
+
+# Decided that the data examined will be all under 1000
+newdf = df.loc[df['price'].abs()<=1000]
+#examining the correlation again
+plt.figure(figsize = (12, 8)) 
+plt.scatter(x= 'availability_365', y = 'price', data = newdf) 
+plt.ylabel('availability_365', fontsize = 14)
+plt.xlabel('price', fontsize = 14)
+plt.show()
+
+print("The dataset has {} rows and {} columns.".format(*newdf.shape))
+#The dataset has 27027 rows and 18 columns.
+
+# =============================================================================
+# Creating new variable: province 
+# =============================================================================
+# trying to create the Connacht
+newdf.loc[newdf['county'].str.contains('Mayo'), 'province'] = 'Connacht'
+newdf.loc[newdf['county'].str.contains('Sligo'), 'province'] = 'Connacht'
+newdf.loc[newdf['county'].str.contains('Galway'), 'province'] = 'Connacht'
+newdf.loc[newdf['county'].str.contains('Roscommon'), 'province'] = 'Connacht'
+newdf.loc[newdf['county'].str.contains('Leitrim'), 'province'] = 'Connacht'
+
+
+newdf.loc[newdf['county'].str.contains('Cork'), 'province'] = 'Munster'
+newdf.loc[newdf['county'].str.contains('Kerry'), 'province'] = 'Munster'
+newdf.loc[newdf['county'].str.contains('Waterford'), 'province'] = 'Munster'
+newdf.loc[newdf['county'].str.contains('Clare'), 'province'] = 'Munster'
+newdf.loc[newdf['county'].str.contains('Limerick'), 'province'] = 'Munster'
+newdf.loc[newdf['county'].str.contains('Tipperary'), 'province'] = 'Munster'
+
+newdf.loc[newdf['county'].str.contains('Dublin'), 'province'] = 'Leinster'#1
+newdf.loc[newdf['county'].str.contains('Louth'), 'province'] = 'Leinster' #2
+newdf.loc[newdf['county'].str.contains('Offaly'), 'province'] = 'Leinster'#3
+newdf.loc[newdf['county'].str.contains('Wicklow'), 'province'] = 'Leinster'#4
+newdf.loc[newdf['county'].str.contains('Wexford'), 'province'] = 'Leinster'#5
+newdf.loc[newdf['county'].str.contains('Laois'), 'province'] = 'Leinster'#6
+newdf.loc[newdf['county'].str.contains('Kildare'), 'province'] = 'Leinster'#7
+newdf.loc[newdf['county'].str.contains('Kilkenny'), 'province'] = 'Leinster'#8
+newdf.loc[newdf['county'].str.contains('Longford'), 'province'] = 'Leinster'#9
+newdf.loc[newdf['county'].str.contains('Meath'), 'province'] = 'Leinster'#10
+newdf.loc[newdf['county'].str.contains('Westmeath'), 'province'] = 'Leinster'#11
+newdf.loc[newdf['county'].str.contains('Carlow'), 'province'] = 'Leinster'#12
+
+newdf.loc[newdf['county'].str.contains('Cavan'), 'province'] = 'Ulster'#1
+newdf.loc[newdf['county'].str.contains('Donegal'), 'province'] = 'Ulster'#2
+newdf.loc[newdf['county'].str.contains('Monaghan'), 'province'] = 'Ulster'#3
+
+
+newdf['province'].value_counts().sort_values(ascending=False)
+#leinster    11316
+#munster      8069
+#connacht     4849
+#ulster       2344
+
+plt.figure(figsize = (12, 8))
+sns.countplot(y = 'province', data = newdf, palette = 'terrain',order = newdf['province'].value_counts().index)
+plt.title('Number of Room Types', fontsize = 20)
+plt.ylabel('Province', fontsize = 14)
+plt.xlabel('Number of AirBnB listings', fontsize = 14)
+plt.show()
+
+
+# =============================================================================
+# Checking price and availablitiy for each room type
+# =============================================================================
+# creating a new dataset with Room Type and 
+room_price_avaibility = pd.DataFrame({'room_type': newdf['room_type'],
+                   'availability_365': newdf['availability_365'],
+                   'price': newdf['price']})
+
+
+room_price_avaibility.groupby('room_type')['price'].describe()
+#                   count        mean         std   min   25%    50%     75%        max
+#room_type                                                                     
+#Entire home/apt  15349.0  138.737703  104.924566  11.0  80.0  110.0  155.00    1000.0  
+#Hotel room         320.0   96.550000   67.870132   0.0  62.0   82.0  107.25     500.0    
+#Private room     11119.0   66.937494   57.303045  12.0  40.0   55.0   75.00    1000.0    
+#Shared room        239.0   56.108787  109.101972  10.0  20.0   30.0   52.50     999.0    
+
+ 
+
+# boxplot for  price for the hotel type for Per Person
+plt.figure(figsize = (12, 8))
+price_room_boxplot = sns.boxplot(x = 'room_type', y = 'price',
+            data = room_price_avaibility, fliersize = 0)
+price_room_boxplot.set_title('Price of Room per Night for Room Type', fontsize = 20)
+price_room_boxplot.set_ylabel('Price [EUR]', fontsize = 14)
+price_room_boxplot.set_xlabel('Room Type', fontsize = 14)
+price_room_boxplot.set_ylim(0,300)
+plt.show()
+
+#Save the graph
+price_room_boxplot.figure.savefig('price_room_boxplot.png')
+
+
+
+# Average price for each room type
+room_availability = room_price_avaibility.groupby('room_type')['availability_365'].mean()
+print(room_availability)
+#Entire home/apt    154.516879
+#Hotel room         168.050000
+#Private room       130.476524
+#Shared room        115.962343
+#Name: availability_365, dtype: float64
+
+
+plt.figure(figsize = (12, 8))
+room_availability_graph = sns.barplot(x = 'room_type', y= 'availability_365', data = room_availability.reset_index(), palette = 'terrain')
+
+room_availability_graph.set_title('Availability for Each Room Type', fontsize = 20)
+room_availability_graph.set_ylabel('Number of Room Types', fontsize = 14)
+room_availability_graph.set_xlabel('Room Type', fontsize = 14)
+plt.show()
+
+
+#Save the graph
+room_availability_graph.figure.savefig('room_availability_graph.png')
+
+
+''' 
+TO Do list
+
+- create boxplots for price and availablitiy for each room type and each county?
+
+
+- create a variable Munster, Leinster and Connaught?
 
 '''
-CREATE A BAR CHART
+
+
+# =============================================================================
+# Checking price and availablitiy for each parish
+# =============================================================================
+# checking AirBnBs per Parishes
+parish_price_availability = pd.DataFrame({'parish': newdf['parish'],
+                   'county': newdf['county'],
+                   'availability_365': newdf['availability_365'],
+                   'price': newdf['price']})
+
+#examining the number of listings in each parish
+plt.figure(figsize = (12, 12))
+parish_listings = sns.countplot(y = 'parish', data = parish_price_availability, palette = 'terrain',order = parish_price_availability['parish'].value_counts().head(50).index)
+parish_listings.set_title('Number of AirBnBs in each Parish', fontsize = 20)
+parish_listings.set_ylabel('Name of Parish', fontsize = 12)
+parish_listings.set_xlabel('Number of AirBnB listings',  fontsize = 12)
+plt.show()
+
+#Save the graph
+parish_listings.figure.savefig('parish_listings.png')
+
+
+
+#examining which parishes have the HIGHEST AVERAGE PRICE per listing (per night)
+parish_price_availability.groupby('parish')['price'].mean().sort_values(ascending=False).head(10)
+#Ongar                    170.854545
+#Dundalk-Carlingford      164.774566
+#Bandon - Kinsale         151.003289
+#Pembroke                 147.667697
+#Carrick-on-Shannon       139.821138
+#Cobh                     139.042735
+#South East Inner City    134.120267
+#Callan-Thomastown        133.887574
+#Galway City Central      132.659170
+#Moate                    130.716418
+
+#Most parishes with the most number of listings
+parish_price_availability['parish'].value_counts().head(10)
+#North Inner City         1528
+#South East Inner City    1347
+#Kenmare                  1097
+#South West Inner City     821
+#Ennistimon                816
+#Conamara North            746
+#Corca Dhuibhne            739
+#Pembroke                  647
+#Killarney                 637
+#Galway City Central       578
+
+# boxplot for  price for the hotel type for Per Person
+plt.figure(figsize = (12, 8))
+price_parish_boxplot = sns.boxplot(x = 'parish', y = 'price',
+            data = parish_price_availability, fliersize = 0,order = parish_price_availability['parish'].value_counts().head(10).index)
+price_parish_boxplot.set_title('Booking Price per Night for Top 10 Parishes', fontsize = 20)
+price_parish_boxplot.set_ylabel('Price [EUR]', fontsize = 14)
+price_parish_boxplot.set_xlabel('Parish', fontsize = 14)
+price_parish_boxplot.set_ylim(0,400)
+price_parish_boxplot.set_xticklabels(price_parish_boxplot.get_xticklabels(), rotation = 45)
+plt.show()
+
+#Save the graph
+price_parish_boxplot.figure.savefig('price_parish_boxplot.png')
+
+
+''' NEEDS FIXING!
+# Average availability for the TOP 10 parishes
+parish_availability = parish_price_availability.groupby('parish')['availability_365'].mean().sort_values(ascending=False).head(10)
+print(parish_availability)
+
+plt.figure(figsize = (200, 200))
+parish_availability_graph = sns.barplot(x = 'parish', y= 'availability_365', data = parish_price_availability)
+parish_availability_graph.set_title('Availability for Top 10 Parishes', fontsize = 20)
+parish_availability_graph.set_ylabel('Number of Available Nights', fontsize = 14)
+parish_availability_graph.set_xlabel('Parish', fontsize = 14)
+parish_availability_graph.set_xticklabels(parish_availability_graph.get_xticklabels(), rotation = 45)
+parish_availability_graph.set_ylim(0,300)
+plt.show()
+
+
+#Save the graph
+parish_availability_graph.figure.savefig('parish_availability_graph.png')
 '''
+
 
 
 # =============================================================================
 # Checking county by Availability 365 and Price
 # =============================================================================
 
-county_availablity_price = df.groupby(
+county_availablity_price = newdf.groupby(
         ['county']
-        )['availability_365', 'price'].mean()
+        )['availability_365', 'price']
 
 
-print(county_availablity_price)
-#           availability_365       price
-#county                                 
-#Carlow           155.222857  110.097143
-#Cavan            213.844560   93.373057
-#Clare            174.340078  126.587467
-#Cork             163.842061  111.277872
-#Donegal          201.514677  105.308219
-#Dublin            68.975929  271.350337
-#Galway           162.500559  204.108461
-#Kerry            191.302016  144.601982
-#Kildare          141.466077  107.115044
-#Kilkenny         150.326437  133.818391
-#Laois            191.584795   85.637427
-#Leitrim          189.659259  115.388889
-#Limerick         174.066508  139.173397
-#Longford         159.464286  140.303571
-#Louth            198.273775  168.700288
-#Mayo             190.433151  107.325254
-#Meath            158.845972  160.869668
-#Monaghan         190.710938   90.984375
-#Offaly           177.660000  102.186667
-#Roscommon        192.745098  102.916667
-#Sligo            161.984252  101.708661
-#Tipperary        191.081140  125.421053
-#Waterford        149.324752  118.902970
-#Westmeath        195.881579  110.855263
-#Wexford          144.213592  140.382802
-#Wicklow          167.646098  108.9038111
+print(county_availablity_price.describe())
+
 
 #plotting the data
 plt.figure(figsize = (20, 16))
@@ -324,6 +451,8 @@ plt.title('Checking correlation between Availability and Price', fontsize = 20)
 plt.ylabel('Availability', fontsize = 14)
 plt.xlabel('Price', fontsize = 14)
 
+
+
 #plotting the data
 plt.figure(figsize = (12, 8))
 sns.relplot(x = "price", y = "availability_365", data = county_availablity_price);
@@ -331,16 +460,17 @@ plt.title('Checking correlation between Availability and Price', fontsize = 20)
 plt.ylabel('Availability', fontsize = 14)
 plt.xlabel('Price', fontsize = 14)
 
+
 # =============================================================================
 # Perhaps lack of correlation due to Dublin and the other counties
 # =============================================================================
 # Getting Dublin
-df_dublin = df[df.county == 'Dublin']
+newdf_dublin = newdf[newdf.county == 'Dublin']
 
 
-df_dublin['neighbourhood_group'].unique()
+newdf_dublin['neighbourhood_group'].unique()
 
-df_dublin.Parish.unique()
+newdf_dublin.parish.unique()
 #array(['Ballyfermot-Drimnagh', 'South East Inner City',
 #       'North Inner City', 'South West Inner City', 'Cabra-Glasnevin',
 #       'Pembroke', 'Kimmage-Rathmines', 'Clontarf', 'Artane-Whitehall',
@@ -355,7 +485,7 @@ df_dublin.Parish.unique()
 
 
 # counting numbers of Room Types
-df_dublin.groupby(['Parish']).size().sort_values(ascending=False)
+newdf_dublin.groupby(['parish']).size().sort_values(ascending=False)
 #North Inner City             1531
 #South East Inner City        1350
 #South West Inner City         828
@@ -390,64 +520,36 @@ df_dublin.groupby(['Parish']).size().sort_values(ascending=False)
 
 
 #Checking Dublin's Statistics
-df_dublin.describe()
+newdf_dublin.describe()
 
-
-
-
-plt.figure(figsize = (12, 8))
-sns.countplot(x = 'parish', data = df_dublin, palette = 'terrain',order = df_dublin['Parish'].value_counts().head(50).index)
-plt.xticks(rotation = 90)
-plt.title('Number of AirBnBs in each Parish in Dublin', fontsize = 20)
-plt.ylabel('count', fontsize = 14)
-plt.xlabel('Parish', fontsize = 14)
-plt.show()
 
 #plotting the data
 plt.figure(figsize = (12, 8))
-sns.relplot(x = "price", y = "availability_365", data = df_dublin);
+sns.relplot(x = "price", y = "availability_365", data = newdf_dublin);
 plt.title('Checking correlation between Availability and Price', fontsize = 20)
 plt.ylabel('Availability', fontsize = 14)
 plt.xlabel('Price', fontsize = 14)
 
 
-sns.catplot(x="price", y="C", data = df)
+sns.catplot(x="price", y="availability_365", data = newdf_dublin)
 
-
-'''
-SCATTERPLOT FOR PRICE AND AVAILABILITY
-'''
-
-sns.relplot(x = "price", y = "availability_365", data = df_dublin);
 
 # =============================================================================
 # Examining Top Hosts in ROI
 # =============================================================================
 #let's see what hosts (IDs) have the most listings on Airbnb platform and taking advantage of this service
-top_host = df.host_id.value_counts().head(10)
-
-
-#222188458    143
-#218736839    113
-#98759090     100
-#105690532     81
-#54449369      62
-#148347815     58
-#160402201     48
-#208252367     44
-#123745971     41
-#134884575     38
+top_host = newdf.host_id.value_counts().head(10)
 
 
 #Creating a dataframe for top_host
-top_host_df=pd.DataFrame(top_host)
-top_host_df.reset_index(inplace=True)
-top_host_df.rename(columns={'index':'Host_ID', 'host_id':'P_Count'}, inplace=True)
-top_host_df
+top_host_newdf=pd.DataFrame(top_host)
+top_host_newdf.reset_index(inplace=True)
+top_host_newdf.rename(columns={'index':'Host_ID', 'host_id':'P_Count'}, inplace=True)
+top_host_newdf
 
 
 #Creating a graph for Hosts
-host_graph=sns.barplot(x="Host_ID", y="P_Count", data=top_host_df,
+host_graph=sns.barplot(x="Host_ID", y="P_Count", data=top_host_newdf,
                  palette='Blues_d')
 host_graph.set_title('Hosts with the most listings in ROI')
 host_graph.set_ylabel('Count of listings')
@@ -458,7 +560,7 @@ host_graph.set_xticklabels(host_graph.get_xticklabels(), rotation=45)
 
 
 '''TRYING TO CREATE A MEAN FOR AVAILABILITY FOR TOP 15 HOSTS'''
-top_host1 = df.groupby(
+top_host1 = newdf.groupby(
         ['host_id']
         )['availability_365', 'price'].mean()
 
@@ -466,9 +568,9 @@ top_host1 = df.groupby(
 
 
 #pivoting table to produce:
-top_host_table_AV = pd.DataFrame({'A': df['host_id'],
-                   'B': df['county'],
-                   'C': df['availability_365']})
+top_host_table_AV = pd.DataFrame({'A': newdf['host_id'],
+                   'B': newdf['county'],
+                   'C': newdf['availability_365']})
 
 top_host_table_AV.A.value_counts().head(10)
 
