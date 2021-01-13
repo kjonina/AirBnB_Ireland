@@ -13,18 +13,19 @@ This dataset was collected from [AirBnb website](http://insideairbnb.com/get-the
 ## Business Questions:
 The following Business Questions were thought of:
 
-- [ ] What County and City Coucils have the most AirBnB listing?
+- [x] What County and City Coucils have the most AirBnB listing?
 
-- [ ] What counties have the most AirBnB listing?
-- [ ] What counties have the highest average price?
-- [ ] What counties have the highest average availability?
+- [x] What counties have the most AirBnB listing?
+- [x] What counties have the highest average price?
+- [x] What counties have the highest average availability?
 
-- [ ] What provinces have the most AirBnB listing?
-- [ ] What provinces have the highest average price?
-- [ ] What provinces have the highest average availability?
+- [x] What provinces have the most AirBnB listing?
+- [x] What provinces have the highest average price?
+- [x] What provinces have the highest average availability?
 
-- [ ] What is the most common room type listed in Ireland?
-- [ ] What is the average price for listings in each room type?
+- [x] What is the most common room type listed in Ireland?
+- [x] What is the average price for each room type?
+- [x] What is the average availability for  each room type?
 
 - [ ] What are the most common words in the listings?
 
@@ -35,16 +36,17 @@ The following Business Questions were thought of:
 The purpose of this analysis for myself is to: 
 - [ ] deal with parts of code I struggle with: splitting text data, creating loops.
 - [ ] deal with outliers in prices
+- [ ] create a map (preferably a heatmap) for the locations of the AirBnB.
 - [ ] create a more fancy looking graphs 
 - [ ] run analysis on text column called ['Name'] 
-- [ ] create a WordCloud for ['Name']
+- [ ] create a WordCloud for longitude['Name']
 - [ ] create a predictive model for Prices 
 
 
 ## Data preparation
 The following are variable 
 ['id', 'name', 'host_id', 'host_name', 'neighbourhood_group',
-'neighbourhood', 'latitude', 'longitude', 'room_type', 'price',
+'neighbourhood', 'latitude', '', 'room_type', 'price',
 'minimum_nights', 'number_of_reviews', 'number_of_reviews_ltm',
 'last_review', 'calculated_host_listings_count', 'availability_365']
 
@@ -61,6 +63,9 @@ When the outlier is removed, here are the rest of the prices for the rest of the
 After running z-scores and removing all outliers above 3, there is 27082 rows and 18 columns in the dataset. From now on, I will reference only this cleaned dataset.
 
 
+![map_of_ROI](https://github.com/kjonina/AirBnB_Ireland/blob/main/Graphs/map_of_ROI.png)
+The graph shows the price of the AirBnB listings by location. 
+
 ## New Variables
 New Variables were created such as County, relates to the physical address of the AirBnB Listing.  County is an important variable because there are several Councils in Co. Dublin:
 [Dublin City Council, South Dublin County Council, Fingal County Council, Dun Laoghaire-rathdown County Council]
@@ -68,7 +73,7 @@ Cork has two different councils too: ['Cork City Council', 'Cork County Council'
 
 
 Another new variable created was ['Province'] for Connacht, Munster, Leinster and Ulster. Unfortunately, this is only ROI data so the only counties from Ulster that are in the dataset are Donegal, Monaghan and Cavan.
-Hence there are less AirBnBlistings for Ulster(ROI).
+Hence there are less AirBnBlistings for Ulster(ROI). =
 
 | Province | Count |
 | ----------| ------------- |
@@ -80,15 +85,15 @@ Hence there are less AirBnBlistings for Ulster(ROI).
 ![province_graph](https://github.com/kjonina/AirBnB_Ireland/blob/main/Graphs/province_graph.png)
 Please remember: Ulster only has Donegal, Monaghan and Cavan for Ulster.
 
-
-
-## Exploring EDA
+## Exploring EDA - County and City Councils
 
 ### What County and City Councils have the most AirBnB listing?
 
 ![neighbourhood_group_graph](https://github.com/kjonina/AirBnB_Ireland/blob/main/Graphs/neighbourhood_group_graph.png)
 This graph shows the number of AirBnB listings under each Council. Some councils may choose to limit the number of AirBnBs listings for rent control reasons. 
 
+
+## Exploring EDA - Countries
 
 ### What counties have the most AirBnB listing?
 
@@ -101,7 +106,11 @@ This graph shows the number of AirBnB listings under each Council. Some councils
 ### What is the average  availabilty in each county?
 
 ![county_availability](https://github.com/kjonina/AirBnB_Ireland/blob/main/Graphs/county_availability_graph.png)
+Dublin has the lowest average availability of 69, which is the lowest in the country. An explonation for this could be that the many of the AirBnBs are actually student accomodation for college students. When the students leave at the end of spring, the tenants put up their available rooms on AirBnB.
 
+To test this, a new dataset was created called 'newdf_dublin'
+
+## Exploring EDA - Room Type
 
 ### What is the most common room type listed in Ireland?
 
@@ -127,7 +136,6 @@ The graph shows the price for each room type
 The graph displays average availablity for each room type. 
 
 
-
 ### What are the most common words in the listings?
 Not Finished
 
@@ -139,3 +147,6 @@ I came back to this dataset after about a month or two and I found it difficult 
 Note to self: comment better. 
 
 I should also learn to do a loop to go through each county and place into a province. 
+
+During my hiatus, I had to analyse a dataset for a college module where I used Python and Pandas too. Due to the volume of graphs I created, I learned how to automatically save graphs so that when I make adjustments to the graph for a billionth time, I don't have to go through the process of updating the graph in the folder. I take that as a win!
+Now I use that tiny piece of code everywhere and it reduced my error with graphs. As long as I have the right name in this README.md, the updated graph will always be displayed!

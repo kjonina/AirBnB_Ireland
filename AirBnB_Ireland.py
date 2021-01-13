@@ -174,8 +174,8 @@ newdf = df.loc[df['z_score'].abs()<=3]
 plt.figure(figsize = (12, 8)) 
 final_data = plt.scatter(x= 'availability_365', y = 'price', data = newdf) 
 plt.title('Final Data After Removing all Z-Scores above 3', fontsize = 20)
-plt.ylabel('availability_365', fontsize = 14)
-plt.xlabel('Price [EUR]', fontsize = 14)
+plt.ylabel('Price [EUR]', fontsize = 14)
+plt.xlabel('availability_365', fontsize = 14)
 plt.show()
 
 final_data.figure.savefig('final_data.png')
@@ -183,6 +183,57 @@ final_data.figure.savefig('final_data.png')
 
 print("The dataset has {} rows and {} columns.".format(*newdf.shape))
 #The dataset has 27082 rows and 18 columns.
+
+
+# =============================================================================
+# Trying to make Scatter plot with histograms for  price and availability
+# https://matplotlib.org/3.3.3/gallery/lines_bars_and_markers/scatter_hist.html#sphx-glr-gallery-lines-bars-and-markers-scatter-hist-py
+# =============================================================================
+
+''' NOT WORKING''' 
+
+def scatter_hist(x, y, ax, ax_histx, ax_histy):
+    # no labels
+    ax_histx.tick_params(axis="x", labelbottom=False)
+    ax_histy.tick_params(axis="y", labelleft=False)
+
+    # the scatter plot:
+    ax.scatter(x= 'price', y = 'availability_365', data = newdf)
+
+    # now determine nice limits by hand:
+    binwidth = 0.25
+    xymax = max(np.max(np.abs(x)), np.max(np.abs(y)))
+    lim = (int(xymax/binwidth) + 1) * binwidth
+
+    bins = np.arange(-lim, lim + binwidth, binwidth)
+    ax_histx.hist(x, bins=bins)
+    ax_histy.hist(y, bins=bins, orientation='horizontal')
+
+
+# definitions for the axes
+left, width = 0.1, 0.65
+bottom, height = 0.1, 0.65
+spacing = 0.005
+
+
+rect_scatter = [left, bottom, width, height]
+rect_histx = [left, bottom + height + spacing, width, 0.2]
+rect_histy = [left + width + spacing, bottom, 0.2, height]
+
+# start with a square Figure
+fig = plt.figure(figsize=(8, 8))
+
+ax = fig.add_axes(rect_scatter)
+ax_histx = fig.add_axes(rect_histx, sharex=ax)
+ax_histy = fig.add_axes(rect_histy, sharey=ax)
+
+
+# use the previously defined function
+scatter_hist(x,y, ax, ax_histx, ax_histy)
+
+
+plt.show()
+
 
 # =============================================================================
 # Examining EDA
@@ -569,6 +620,8 @@ plt.show()
 #Save the graph
 county_price_boxplot.figure.savefig('county_price_boxplot.png')
 
+#looking at availablity of each county
+county_price_availability.groupby('county')['availability_365'].describe()
 
 
 # Average availability for each room type
@@ -577,13 +630,13 @@ print(county_availability)
 #Cavan        213.844560
 #Donegal      201.613314
 #Louth        199.423188
-#Westmeath    195.881579
 #Roscommon    192.745098
 #Laois        191.584795
-#Kerry        191.127609
+#KWestmeath    195.881579
+#onaghan     190.710938
+#Maerry        191.127609
 #Tipperary    191.081140
-#Monaghan     190.710938
-#Mayo         190.501565
+#Myo         190.501565
 #Leitrim      189.659259
 #Offaly       176.577181
 #Clare        174.453298
@@ -617,14 +670,6 @@ plt.show()
 
 #Save the graph
 county_availability_graph.figure.savefig('county_availability_graph.png')
-
-
-'''
-1 CREATE A HEATMAP OF NUMBER OF AIRBNB LISTINGS IN EACH COUNTY
-2 STEM WORDS
-3 RUN A LOGISTICAL REGRESSION FOR PRICE
-'''
-
 
 # =============================================================================
 # Perhaps lack of correlation due to Dublin and the other counties
@@ -742,19 +787,29 @@ top_host_table_AV.A.value_counts().head(10)
 
 #let's what we can do with our given longtitude and latitude columns
 #let's see how scatterplot will come out 
-map_of_ROI=df.plot(kind='scatter', x='longitude', y='latitude', label='availability_365', c='price',
+map_of_ROI = newdf.plot(kind='scatter', x='longitude', y='latitude', label='Price [EUR]', c='price',
                   cmap=plt.get_cmap('jet'), colorbar=True, alpha=0.4, figsize=(10,8))
 map_of_ROI.legend()
 
+#Save the graph
+map_of_ROI.figure.savefig('map_of_ROI.png')
+
 
 '''
-IDEAS FOR EDA
+# =============================================================================
+# IDEAS FOR EDA
+# =============================================================================
 
-- boxplot for Councils
+
+1 CREATE A HEATMAP OF NUMBER OF AIRBNB LISTINGS IN EACH COUNTY
 
 - get a gradient map by county
 
 - get a gradient map again (especially of dublin!)
+
+2 STEM WORDS
+3 RUN A LOGISTICAL REGRESSION FOR PRICE
+'''
 
 
 '''
