@@ -231,7 +231,7 @@ county_graph.set_xlabel('Number of AirBnB Listings', fontsize = 14)
 plt.show()
 
 #Save the graph
-parish_graph.figure.savefig('parish_graph.png')
+county_graph.figure.savefig('county_graph.png')
 
 
 
