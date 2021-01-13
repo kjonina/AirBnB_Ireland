@@ -184,10 +184,6 @@ final_data.figure.savefig('final_data.png')
 print("The dataset has {} rows and {} columns.".format(*newdf.shape))
 #The dataset has 27082 rows and 18 columns.
 
-plt.figure(figsize = (12, 8)) 
-sns.displot(x="price", data = newdf)
-
-
 # =============================================================================
 # Examining EDA
 # =============================================================================

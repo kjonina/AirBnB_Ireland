@@ -92,7 +92,7 @@ This graph shows the number of AirBnB listings under each Council. Some councils
 
 ### What counties have the most AirBnB listing?
 
-![county](https://github.com/kjonina/AirBnB_Ireland/blob/main/Graphs/county.png)
+![county_graph](https://github.com/kjonina/AirBnB_Ireland/blob/main/Graphs/county_graph.png)
 
 ### What is the average price for listings in each county?
 
@@ -100,12 +100,12 @@ This graph shows the number of AirBnB listings under each Council. Some councils
 
 ### What is the average  availabilty in each county?
 
-![county_availability](https://github.com/kjonina/AirBnB_Ireland/blob/main/Graphs/county_availability.png)
+![county_availability](https://github.com/kjonina/AirBnB_Ireland/blob/main/Graphs/county_availability_graph.png)
 
 
 ### What is the most common room type listed in Ireland?
 
-![room_type](https://github.com/kjonina/AirBnB_Ireland/blob/main/Graphs/room_type.png)
+![room_graph](https://github.com/kjonina/AirBnB_Ireland/blob/main/Graphs/room_graph.png)
 
 There are a huge difference in the room type listing:
 
