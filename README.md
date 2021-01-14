@@ -159,3 +159,26 @@ I should also learn to do a loop to go through each county and place into a prov
 
 During my hiatus, I had to analyse a dataset for a college module where I used Python and Pandas too. Due to the volume of graphs I created, I learned how to automatically save graphs so that when I make adjustments to the graph for a billionth time, I don't have to go through the process of updating the graph in the folder. I take that as a win!
 Now I use that tiny piece of code everywhere and it reduced my error with graphs. As long as I have the right name in this README.md, the updated graph will always be displayed!
+
+
+# Learning Achieved
+The purpose of this analysis for myself is to: 
+- [x] deal with parts of code I struggle with: splitting text data, creating loops.
+I did split data and created new variables which struggled with. The code is not the prettiest or the most concise but I just wanted to aimed for creating them no matter how limited my coding skills are.
+Still have not created one loop. 
+
+- [x] deal with outliers in prices
+I dealt with the outlier in prices and used normalisation to eliminate any outliers.
+
+- [x] create a map (preferably a heatmap) for the locations of the AirBnB.
+I created *a* map for ROI which I was very pleased with myself over. 
+
+- [x] create a more fancy looking graphs 
+Well, I used a different tool, [ Tableau ](https://public.tableau.com/profile/karina.jonina#!/vizhome/AirBnBListingIreland/AirBnBListingsinIreland), to drill down on what is happening with host_id.
+Not sure if this is cheating or just good thinking. I am sure it is possible to create in Python too. 
+I also created three graphs side by side which I learned to hopefully aid better visuals and less writing.
+
+# Post-Analysis Learning
+My next challenge regarding this data set should be:
+- [ ] Create loops for county and province variable creation.
+- [ ] Created more maps 
