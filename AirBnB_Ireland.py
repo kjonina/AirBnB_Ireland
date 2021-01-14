@@ -833,7 +833,10 @@ plt.xlabel('Price', fontsize = 14)
 # =============================================================================
 # Examining Top Hosts in ROI
 # =============================================================================
-#let's see what hosts (IDs) have the most listings on Airbnb platform and taking advantage of this service
+#let's see what hosts (IDs) have the most listings on Airbnb platform and taking advantage of this 
+
+sns.set() 
+
 top_host = newdf.host_id.value_counts().head(10)
 
 
@@ -846,10 +849,10 @@ top_host_newdf
 
 #Creating a graph for Hosts
 host_graph=sns.barplot(x="Host_ID", y="P_Count", data=top_host_newdf,
-                 palette='Blues_d')
-host_graph.set_title('Hosts with the most listings in ROI')
-host_graph.set_ylabel('Count of listings')
-host_graph.set_xlabel('Host IDs')
+                 palette='Blues_d', order = top_host_newdf['Host_ID'])
+host_graph.set_title('Hosts with the most listings in ROI', fontsize = 20)
+host_graph.set_ylabel('Number of AirBnB Listings', fontsize = 14)
+host_graph.set_xlabel('Host IDs', fontsize = 14)
 host_graph.set_xticklabels(host_graph.get_xticklabels(), rotation=45)
 
 
