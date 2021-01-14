@@ -861,12 +861,13 @@ host_graph.set_xticklabels(host_graph.get_xticklabels(), rotation=45)
 host_graph.figure.savefig('host_graph.png')
 
 
-'''TRYING TO CREATE A MEAN FOR AVAILABILITY FOR TOP 15 HOSTS'''
+'''TRYING TO CREATE A MEAN FOR AVAILABILITY FOR TOP 15 HOSTS
 top_host1 = newdf.groupby(
         ['host_id']
-        )['availability_365', 'price'].mean()
+        )['availability_365', 'price']
 
-
+print(top_host1.describe())
+.groupby('host_id')['price']
 
 
 #pivoting table to produce:
@@ -875,6 +876,7 @@ top_host_table_AV = pd.DataFrame({'A': newdf['host_id'],
                    'C': newdf['availability_365']})
 
 top_host_table_AV.A.value_counts().head(10)
+'''
 
 
 # =============================================================================
