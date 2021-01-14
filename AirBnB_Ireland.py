@@ -841,6 +841,7 @@ top_host = newdf.host_id.value_counts().head(10)
 
 
 #Creating a dataframe for top_host
+
 top_host_newdf=pd.DataFrame(top_host)
 top_host_newdf.reset_index(inplace=True)
 top_host_newdf.rename(columns={'index':'Host_ID', 'host_id':'P_Count'}, inplace=True)
@@ -848,6 +849,7 @@ top_host_newdf
 
 
 #Creating a graph for Hosts
+plt.figure(figsize = (12, 8))
 host_graph=sns.barplot(x="Host_ID", y="P_Count", data=top_host_newdf,
                  palette='Blues_d', order = top_host_newdf['Host_ID'])
 host_graph.set_title('Hosts with the most listings in ROI', fontsize = 20)
@@ -855,7 +857,8 @@ host_graph.set_ylabel('Number of AirBnB Listings', fontsize = 14)
 host_graph.set_xlabel('Host IDs', fontsize = 14)
 host_graph.set_xticklabels(host_graph.get_xticklabels(), rotation=45)
 
-
+#Save the graph
+host_graph.figure.savefig('host_graph.png')
 
 
 '''TRYING TO CREATE A MEAN FOR AVAILABILITY FOR TOP 15 HOSTS'''

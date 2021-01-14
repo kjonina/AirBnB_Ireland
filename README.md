@@ -138,6 +138,7 @@ The graph displays average availablity for each room type.
 
 ### Which hosts have the most listings?
 ![host_graph](https://github.com/kjonina/AirBnB_Ireland/blob/main/Graphs/host_graph.png)
+
 There are some hosts that have over 100 listings on AirBnB! That is crazy!
 
 So then I cheated and opened Tableau to look at what is happening in the dataset in relation to hosts. I found some very interesting details.
