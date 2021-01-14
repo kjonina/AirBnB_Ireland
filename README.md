@@ -63,7 +63,8 @@ When the outlier is removed, here are the rest of the prices for the rest of the
 After running z-scores and removing all outliers above 3, there is 27082 rows and 18 columns in the dataset. From now on, I will reference only this cleaned dataset.
 
 
-![map_of_ROI](https://github.com/kjonina/AirBnB_Ireland/blob/main/Graphs/map_of_ROI.png)
+![map_of_ROI](https://github.com/kjonina/AirBnB_Ireland/blob/main/Graphs/map_of_ROI.png) 
+
 The graph shows the price of the AirBnB listings by location. 
 
 ## New Variables
@@ -83,6 +84,7 @@ Hence there are less AirBnBlistings for Ulster(ROI). =
 | Ulster | 2344 |
 
 ![province_graph](https://github.com/kjonina/AirBnB_Ireland/blob/main/Graphs/province_graph.png)
+
 Please remember: Ulster only has Donegal, Monaghan and Cavan for Ulster.
 
 ## Exploring EDA - County and City Councils
@@ -106,9 +108,8 @@ This graph shows the number of AirBnB listings under each Council. Some councils
 ### What is the average  availabilty in each county?
 
 ![county_availability](https://github.com/kjonina/AirBnB_Ireland/blob/main/Graphs/county_availability_graph.png)
-Dublin has the lowest average availability of 69, which is the lowest in the country. An explonation for this could be that the many of the AirBnBs are actually student accomodation for college students. When the students leave at the end of spring, the tenants put up their available rooms on AirBnB.
+Dublin has the lowest average availability of 69 night, which is the lowest in the country. An explonation for this could be that the many of the AirBnBs are actually student accomodation for college students. When the students leave at the end of spring, the tenants put up their available rooms on AirBnB.
 
-To test this, a new dataset was created called 'newdf_dublin'
 
 ## Exploring EDA - Room Type
 
@@ -135,6 +136,13 @@ The graph shows the price for each room type
 ![room_availability_graph](https://github.com/kjonina/AirBnB_Ireland/blob/main/Graphs/room_availability_graph.png)
 The graph displays average availablity for each room type. 
 
+### Which hosts have the most listings?
+![host_graph](https://github.com/kjonina/AirBnB_Ireland/blob/main/Graphs/host_graph.png)
+There are some hosts that have over 100 listings on AirBnB! That is crazy!
+
+So then I cheated and opened Tableau to look at what is happening in the dataset in relation to hosts. I found some very interesting details.
+Here is my [Public Tableau Account](https://public.tableau.com/profile/karina.jonina#!/vizhome/AirBnBListingIreland/AirBnBListingsinIreland). Check out the dashboard and drill down by county or host.
+It is a quick sketch to drill down and hence has no fancy-smancy stuff. 
 
 ### What are the most common words in the listings?
 Not Finished

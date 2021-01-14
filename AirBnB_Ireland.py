@@ -381,6 +381,12 @@ plt.show()
 province_graph.figure.savefig('province_graph.png')
 
 # =============================================================================
+# Save the df in a new CSV as we have new columns 
+# (total_number_nights, total_people, adr and data_boolean)
+# =============================================================================
+newdf.to_csv('NEW_AIRBNB_LISTINGS.csv')
+
+# =============================================================================
 # Checking price and availablitiy for each province
 # =============================================================================
 province_price_avaibility = pd.DataFrame({'province': newdf['province'],
@@ -393,13 +399,17 @@ province_price_avaibility.groupby('province')['price'].describe()
 
 # boxplot for  price for the room 
 plt.figure(figsize = (12, 8))
-price_province_boxplot = sns.boxplot(x = 'province', y = 'price',
+province_price_boxplot = sns.boxplot(x = 'province', y = 'price',
             data = province_price_avaibility, fliersize = 0)
-price_province_boxplot.set_title('Price of Room per Night for Room Type in each Province', fontsize = 20)
-price_province_boxplot.set_ylabel('Price [EUR]', fontsize = 14)
-price_province_boxplot.set_xlabel('Province', fontsize = 14)
-price_province_boxplot.set_ylim(0,300)
+province_price_boxplot.set_title('Price of Room per Night for Room Type in each Province', fontsize = 20)
+province_price_boxplot.set_ylabel('Price [EUR]', fontsize = 14)
+province_price_boxplot.set_xlabel('Province', fontsize = 14)
+province_price_boxplot.set_ylim(0,300)
 plt.show()
+
+
+#Save the graph
+province_price_boxplot.figure.savefig('province_price_boxplot.png')
 
 
 # Average availability in each province
@@ -414,12 +424,51 @@ plt.figure(figsize = (12, 8))
 province_availability_graph = sns.barplot(x = 'province', y= 'availability_365', data = province_availability.reset_index(), palette = 'terrain')
 province_availability_graph.set_title('Average Availability in Each Province', fontsize = 20)
 province_availability_graph.set_ylabel('Number of Room Types', fontsize = 14)
-province_availability_graph.set_xlabel('Room Type', fontsize = 14)
+province_availability_graph.set_xlabel('Province', fontsize = 14)
 plt.show()
 
 
 #Save the graph
 province_availability_graph.figure.savefig('province_availability_graph.png')
+
+
+# =============================================================================
+# Attempting price and availablitiy for Province
+# =============================================================================
+
+'''WARNING: WRONG COLOURS FOR EACH ROOM TYPE!'''
+
+plt.figure(figsize = (12, 8))
+
+plt.subplot(1, 3, 1)
+
+province_graph = sns.countplot(x = 'province', data = newdf, palette = 'terrain',order = newdf['province'].value_counts().index)
+province_graph.set_title('Number of AirBnB Listings in Each Province', fontsize = 20)
+province_graph.set_ylabel('Number of of AirBnB Listings', fontsize = 14)
+province_graph.set_xlabel('Province', fontsize = 14)
+province_graph.set_xticklabels(province_graph.get_xticklabels(), rotation = 45)
+
+
+plt.subplot(1, 3, 2)
+province_price_boxplot = sns.boxplot(x = 'province', y = 'price',
+            data = province_price_avaibility, palette = 'terrain', fliersize = 0)
+province_price_boxplot.set_title('Price of Room ', fontsize = 20)
+province_price_boxplot.set_ylabel('Price [EUR]', fontsize = 14)
+province_price_boxplot.set_xlabel('Province', fontsize = 14)
+province_price_boxplot.set_ylim(0,300)
+province_price_boxplot.set_xticklabels(province_price_boxplot.get_xticklabels(), rotation = 45)
+
+
+
+plt.subplot(1, 3, 3)
+province_availability_graph = sns.barplot(x = 'province', y= 'availability_365', data = province_availability.reset_index(), palette = 'terrain')
+province_availability_graph.set_title('Average Availability in Each Province', fontsize = 20)
+province_availability_graph.set_ylabel('Number of Room Types', fontsize = 14)
+province_availability_graph.set_xlabel('Province', fontsize = 14)
+province_availability_graph.set_xticklabels(province_availability_graph.get_xticklabels(), rotation = 45)
+
+plt.show()
+
 
 
 
@@ -477,6 +526,46 @@ plt.show()
 
 #Save the graph
 room_availability_graph.figure.savefig('room_availability_graph.png')
+
+
+# =============================================================================
+# Attempting price and availablitiy for price
+# =============================================================================
+
+'''WARNING: WRONG COLOURS FOR EACH ROOM TYPE!'''
+
+plt.figure(figsize = (12, 8))
+
+plt.subplot(1, 3, 1)
+
+room_graph = sns.countplot(x= 'room_type', data = newdf, order = newdf['room_type'].value_counts().index)
+room_graph.set_title('Number of AirBnBs Listings', fontsize = 20)
+room_graph.set_xlabel('Room Type', fontsize = 14)
+room_graph.set_ylabel('Number of AirBnB Listings', fontsize = 14)
+room_graph.set_xticklabels(room_graph.get_xticklabels(), rotation = 45)
+
+
+plt.subplot(1, 3, 2)
+room_price_boxplot = sns.boxplot(x = 'room_type', y = 'price',
+            data = room_price_avaibility, fliersize = 0)
+room_price_boxplot.set_title('Price of Room', fontsize = 20)
+room_price_boxplot.set_ylabel('Price [EUR]', fontsize = 14)
+room_price_boxplot.set_xlabel('Room Type', fontsize = 14)
+room_price_boxplot.set_ylim(0,300)
+room_price_boxplot.set_xticklabels(room_price_boxplot.get_xticklabels(), rotation = 45)
+
+
+
+plt.subplot(1, 3, 3)
+room_availability_graph = sns.barplot(x = 'room_type', y= 'availability_365', data = room_availability.reset_index())
+room_availability_graph.set_title('Average Availability', fontsize = 20)
+room_availability_graph.set_ylabel('Number of Room Types', fontsize = 14)
+room_availability_graph.set_xlabel('Room Type', fontsize = 14)
+room_availability_graph.set_xticklabels(room_graph.get_xticklabels(), rotation = 45)
+
+plt.show()
+
+
 
 # =============================================================================
 # Checking price and availablitiy for each parish
@@ -671,6 +760,7 @@ plt.show()
 #Save the graph
 county_availability_graph.figure.savefig('county_availability_graph.png')
 
+
 # =============================================================================
 # Perhaps lack of correlation due to Dublin and the other counties
 # =============================================================================
@@ -795,6 +885,138 @@ map_of_ROI.legend()
 map_of_ROI.figure.savefig('map_of_ROI.png')
 
 
+# =============================================================================
+# 
+# =============================================================================
+
+newdf.loc[newdf['county'].str.contains('Dublin City Council'), 'location'] = 'City'
+newdf.loc[newdf['county'].str.contains('Cork City Council '), 'location'] = 'City'
+newdf.loc[newdf['county'].str.contains('Galway'), 'location'] = 'City'
+
+newdf.loc[newdf['location'].isnull(), 'location'] = 'Countryside'
+
+
+
+#Dublin City Council                      6089
+#Cork City Council                         487
+#Galway City Council                      1027
+
+
+#Kerry County Council                     2923
+#Donegal County Council                   2043
+#Cork County Council                      1879
+#Galway County Council                    1644
+#Clare County Council                     1531
+#Mayo County Council                      1278
+#Dun Laoghaire-rathdown County Council     828
+#Fingal County Council                     761
+#Wexford County Council                    719
+#Wicklow County Council                    551
+#Sligo County Council                      507
+#Waterford City And County Council         504
+#Tipperary County Council                  456
+#Kilkenny County Council                   435
+#Meath County Council                      420
+#Limerick City And County Council          419
+#Louth County Council                      345
+#Kildare County Council                    338
+#South Dublin County Council               325
+#Leitrim County Council                    270
+#Westmeath County Council                  228
+#Roscommon County Council                  204
+#Cavan County Council                      193
+#Carlow County Council                     175
+#Laois County Council                      171
+#Offaly County Council                     149
+#Monaghan County Council                   128
+#Longford County Council                    55
+
+
+
+
+# =============================================================================
+# Checking price and availablitiy for location
+# =============================================================================
+location_price_avaibility = pd.DataFrame({'location': newdf['location'],
+                   'availability_365': newdf['availability_365'],
+                   'price': newdf['price']})
+
+
+
+location_price_avaibility.groupby('location')['price'].describe()
+
+# boxplot for  price for the location 
+plt.figure(figsize = (12, 8))
+location_price_boxplot = sns.boxplot(x = 'location', y = 'price',
+            data = location_price_avaibility, fliersize = 0)
+location_price_boxplot.set_title('Price of Room for Room Type in each Province', fontsize = 20)
+location_price_boxplot.set_ylabel('Price [EUR]', fontsize = 14)
+location_price_boxplot.set_xlabel('location', fontsize = 14)
+location_price_boxplot.set_ylim(0,300)
+plt.show()
+
+
+#Save the graph
+location_price_boxplot.figure.savefig('location_availability_graph.png')
+
+
+
+# Average availability in each location
+location_availability = location_price_avaibility.groupby('location')['availability_365'].mean()
+print(location_availability)
+#City           162.411831
+#Countryside    142.438327
+#Name: availability_365, dtype: float64
+
+plt.figure(figsize = (12, 8))
+location_availability_graph = sns.barplot(x = 'location', y= 'availability_365', data = location_availability.reset_index(), palette = 'terrain')
+location_availability_graph.set_title('Average Availability in Each Location', fontsize = 20)
+location_availability_graph.set_ylabel('Number of Room Types', fontsize = 14)
+location_availability_graph.set_xlabel('location', fontsize = 14)
+plt.show()
+
+
+#Save the graph
+location_availability_graph.figure.savefig('location_availability_graph.png')
+
+
+# =============================================================================
+# Attempting price and availablitiy for location
+# =============================================================================
+
+
+plt.figure(figsize = (12, 8))
+
+plt.subplot(1, 3, 1)
+
+location_graph = sns.countplot(x = 'location', data = newdf, palette = 'husl',order = newdf['location'].value_counts().index)
+location_graph.set_title('Number of AirBnB ', fontsize = 20)
+location_graph.set_xlabel('Location', fontsize = 14)
+location_graph.set_ylabel('Number of AirBnB Listings', fontsize = 14)
+
+
+plt.subplot(1, 3, 2)
+location_price_boxplot = sns.boxplot(x = 'location', y = 'price',
+            data = location_price_avaibility, fliersize = 0, palette = 'husl')
+location_price_boxplot.set_title('Price of Room', fontsize = 20)
+location_price_boxplot.set_ylabel('Price [EUR]', fontsize = 14)
+location_price_boxplot.set_xlabel('Location', fontsize = 14)
+location_price_boxplot.set_ylim(0,300)
+
+
+
+plt.subplot(1, 3, 3)
+location_availability_graph = sns.barplot(x = 'location', y= 'availability_365', data = location_availability.reset_index(), palette = 'husl')
+location_availability_graph.set_title('Average Availability', fontsize = 20)
+location_availability_graph.set_ylabel('Number of AirBnB Listigs', fontsize = 14)
+location_availability_graph.set_xlabel('Location', fontsize = 14)
+
+plt.show()
+
+''' HOW TO AUTOMATE THE SAVING PROCESS?'''
+
+
+
 '''
 # =============================================================================
 # IDEAS FOR EDA
@@ -807,9 +1029,13 @@ map_of_ROI.figure.savefig('map_of_ROI.png')
 
 - get a gradient map again (especially of dublin!)
 
+2 SPLIT THE DATASET BY COUNTRY AND CITY TO EXAMINE THE DATASET THIS WAY
+following this for inspiration
+https://www.shanelynn.ie/the-irish-property-price-register-geocoded-to-small-areas/
+- I like the linegraph for it.
+
 2 STEM WORDS
+
 3 RUN A LOGISTICAL REGRESSION FOR PRICE
 '''
 
-
-'''
