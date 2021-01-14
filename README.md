@@ -161,7 +161,7 @@ During my hiatus, I had to analyse a dataset for a college module where I used P
 Now I use that tiny piece of code everywhere and it reduced my error with graphs. As long as I have the right name in this README.md, the updated graph will always be displayed!
 
 
-# Learning Achieved
+# Learning Outcomes Achieved
 The purpose of this analysis for myself is to: 
 - [x] deal with parts of code I struggle with: splitting text data, creating loops.
 I did split data and created new variables which struggled with. The code is not the prettiest or the most concise but I just wanted to aimed for creating them no matter how limited my coding skills are.
